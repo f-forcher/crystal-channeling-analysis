@@ -6,6 +6,10 @@ import pandas as pd
 import sys
 from itertools import islice
 import readline as rd
+"""
+Test the function to get editable input test on the command line
+"""
+
 
 # https://stackoverflow.com/questions/2533120/show-default-value-for-editing-on-python-input-possible
 def rlinput(prompt, prefill=''):

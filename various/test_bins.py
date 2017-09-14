@@ -6,6 +6,10 @@ import pandas as pd
 import sys
 from itertools import islice
 import readline as rd
+"""
+Test on binning data with pandas
+"""
+
 
 arr = pd.Series([1,2,3,4,5,6,7,8,9,10, 1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5, 5,6,4,7])
 arr2 = pd.Series([-1,-2,-3,-4,-5,-6,-7,-8,-9,-10])
