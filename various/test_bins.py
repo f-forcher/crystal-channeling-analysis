@@ -22,7 +22,7 @@ high_range_edge = 10
 bins = np.linspace(low_range_edge,high_range_edge,num=6)# ...these bins: [(0.0, 2.0] < (2.0, 4.0] < (4.0, 6.0] < (6.0, 8.0] < (8.0, 10.0]
 
 # bin centers, basically we create a list which is the bin edges above, moved forward by half bin width, and then
-# we remove the last one with [:-1] because the last one is half bin after the last edge high_range_edge
+# we remove the last one with [:-1] because the last one is half bin after the last edge at high_range_edge
 bincenters = np.linspace(low_range_edge+1,high_range_edge+1,num=6)[:-1]
 
 # Binned data, len(data) long list where the original data is replaced by the respective bin center
