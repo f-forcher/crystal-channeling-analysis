@@ -132,7 +132,7 @@ crystal_length = right_edge - left_edge
 
 # Get the inside of the crystal to avoid ambiguous bins
 side_bins_to_cut = 1 # How many bins to remove from each side, to avoid border
-                     # effects
+                     # ambiguities
 proposed_cut_left = left_edge + side_bins_to_cut * x_bin_width
 proposed_cut_right = right_edge - side_bins_to_cut * x_bin_width
 #################
