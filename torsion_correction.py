@@ -11,6 +11,7 @@ import os
 
 # MY LIBS
 import editable_input as ei # My script for editable text input
+from bin_dataframe import bin2D_dataframe
 
 ################# READ THE PARAMETERS
 # Read the parameters from the .csv
@@ -70,4 +71,12 @@ for df in evts:
     # break; # Uncomment to get only the first chunk
 print("\n[LOG]: Loaded data!\n")
 events.info()
+#################
+
+
+################# BIN THE DATA
+gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
+                        (-2,2),(-30e-5,30e-5),17*2,12*2)
+for i,v in gruppi:
+    print(i)
 #################
