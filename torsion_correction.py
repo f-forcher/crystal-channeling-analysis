@@ -8,10 +8,74 @@ import sys
 from itertools import islice
 from scipy import signal # To find peaks, for edge-detecting the crystal
 import os
+from sklearn import mixture
+import random
+
 
 # MY LIBS
 import editable_input as ei # My script for editable text input
 from bin_dataframe import bin2D_dataframe
+
+
+######################################
+################# FUNCTIONS
+
+def fit_and_get_efficiency(input_groupby_obj):
+    """
+    Function to be applied on a groupby to get channeling efficiency.
+
+    data: input dataset.
+
+    return: channeling efficiency (0 < efficiency < 1), basically
+            channeling peak weight.
+    """
+    clf = mixture.GaussianMixture(
+        n_components=2,
+        covariance_type='full',
+        verbose=2,
+        verbose_interval=10,
+        random_state=random.SystemRandom().randrange(0, 4095),
+        #       means_init=[[-17], [0]],
+        #       weights_init=[1 / 2, 1 / 2],
+        init_params="kmeans",
+        tol=1e-6,
+        max_iter=1000)
+
+    ################# GET THE DATA FROM THE DATAFRAME
+    data = input_groupby_obj.reshape(-1, 1)
+
+    ################# FIT THE DATA
+    # Check that we have enough data for a fit, otherwise just return eff=0
+    efficiency = 0
+    if data.size > 10:
+        clf.fit(data)
+
+        r_m1, r_m2 = clf.means_
+        w1, w2 = clf.weights_
+        m1, m2 = r_m1[0], r_m2[0]
+
+        # Save the weights in the right array
+        # Lower delta_thetax is the AM peak, higher CH
+        if (m1 < m2):
+            weights_AM = w1
+            weights_CH = w2
+            means_AM = m1
+            means_CH = m2
+        else:
+            weights_AM = w2
+            weights_CH = w1
+            means_AM = m2
+            means_CH = m1
+        efficiency = weights_CH
+    return efficiency
+
+
+
+
+
+
+######################################
+################# MAIN
 
 ################# READ THE PARAMETERS
 # Read the parameters from the .csv
@@ -71,12 +135,65 @@ for df in evts:
     # break; # Uncomment to get only the first chunk
 print("\n[LOG]: Loaded data!\n")
 events.info()
+
+events["Delta_Theta_x"] = events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values
 #################
 
 
 ################# BIN THE DATA
 gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
                         (-2,2),(-30e-5,30e-5),17*2,12*2)
-for i,v in gruppi:
-    print(i)
+
+# efficiency_histo = {}
+# clf = mixture.GaussianMixture(
+#     n_components=2,
+#     covariance_type='full',
+#     verbose=2,
+#     verbose_interval=10,
+#     random_state=random.SystemRandom().randrange(0, 4095),
+# #    means_init=[[-17], [0]],
+#     #                              weights_init=[1 / 2, 1 / 2],
+#     init_params="kmeans",
+#     tol=1e-6,
+#     max_iter=1000)
+# for index1, index2, gruppo in gruppi:
+#     print("\n",index)
+#     # This reshape transforms (an np.array) [1,2,3] into [ [1], [2], [3] ]
+#     # Scikit wants a list of datapoints, here the datapoints coordinate are 1D, hence each one is a single-element list (of features/coordinates)
+#     data = (gruppo.loc[:,"Tracks_thetaOut_x"].values - \
+#             gruppo.loc[:,"Tracks_thetaIn_x"].values).reshape(-1, 1)
+#     print(data[:10])
+#     print("Tot size: ", data.size)
+#
+#     efficiency = 0
+#     if data.size < 10:
+#         continue
+#     else:
+#         clf.fit(data)
+#
+#         r_m1, r_m2 = clf.means_
+#         w1, w2 = clf.weights_
+#         m1, m2 = r_m1[0], r_m2[0]
+#
+#         # Save the weights in the right array
+#         # Lower delta_thetax is the AM peak, higher CH
+#         if (m1 < m2):
+#             weights_AM = w1
+#             weights_CH = w2
+#             means_AM = m1
+#             means_CH = m2
+#         else:
+#             weights_AM = w2
+#             weights_CH = w1
+#             means_AM = m2
+#             means_CH = m1
+#         efficiency = weights_CH
+#
+#     efficiency_histo[index] = efficiency
+#     print("efficiency: ", efficiency)
+
+# data = (gruppo.loc[:,"Tracks_thetaOut_x"].values - \
+#         gruppo.loc[:,"Tracks_thetaIn_x"].values).reshape(-1, 1)
+efficiencies = gruppi["Delta_Theta_x"].aggregate(fit_and_get_efficiency)
+
 #################
