@@ -34,7 +34,7 @@ def bin2D_dataframe(data, x_column, y_column, x_range, y_range, nxbins, nybins):
     ybincenters = np.linspace(low_yrange_edge + delta_ybins/2, high_yrange_edge + delta_ybins/2, num=nybins + 1).round(5)[:-1]
 
     # TODO Check efficiency of this method
-    gruppi = data.groupby([pd.cut(data.loc[:,x_column], xbins, labels = xbincenters),
-                         pd.cut(data.loc[:,y_column], ybins, labels = ybincenters)])
+    gruppi = data.groupby([pd.cut(data.loc[:,x_column], xbins, labels = xbincenters, precision=5),
+                         pd.cut(data.loc[:,y_column], ybins, labels = ybincenters, precision=5)])
 
     return gruppi

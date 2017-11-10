@@ -1,6 +1,7 @@
+# For Python 2 cause pyROOT
 # SYSTEM LIBS
 from matplotlib.colors import LogNorm
-import matplotlib.pyplot as plt; plt.ion();
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 # from root_pandas import read_root
@@ -10,7 +11,7 @@ from scipy import signal # To find peaks, for edge-detecting the crystal
 import os
 from sklearn import mixture
 import random
-
+import ROOT as rt
 
 # MY LIBS
 import editable_input as ei # My script for editable text input
@@ -32,27 +33,19 @@ def fit_and_get_efficiency(input_groupby_obj):
     clf = mixture.GaussianMixture(
         n_components=2,
         covariance_type='full',
-        verbose=0,
+        verbose=2,
         verbose_interval=10,
         random_state=random.SystemRandom().randrange(0, 4095),
         means_init=[[0], [50]],
-    #        weights_init=[1 / 2, 1 / 2],
+#        weights_init=[1 / 2, 1 / 2],
         init_params="kmeans",
         n_init = 2,
         tol=1e-6,
-        precisions_init = [[[1/15]],[[1/15]]],
         #warm_start=True,
-        max_iter=100)
+        max_iter=200)
 
     ################# GET THE DATA FROM THE DATAFRAME
-    lowest_percentage = 10
-    highest_percentage = 90
-    first_percentile = np.percentile(input_groupby_obj, lowest_percentage)
-    last_percentile = np.percentile(input_groupby_obj, highest_percentage)
-    data_reduced = input_groupby_obj.values[(input_groupby_obj.values>=first_percentile) & (input_groupby_obj.values<=last_percentile)]
-    data = data_reduced.reshape(-1, 1)
-
-    #data = input_groupby_obj.reshape(-1, 1)
+    data = input_groupby_obj.reshape(-1, 1)
 
     ################# FIT THE DATA
     # Check that we have enough data for a fit, otherwise just return eff=0
@@ -60,20 +53,9 @@ def fit_and_get_efficiency(input_groupby_obj):
     if data.size > 10:
         clf.fit(data)
 
-        # if not clf.converged_:
-        #     return 0
-
-
         r_m1, r_m2 = clf.means_
         w1, w2 = clf.weights_
         m1, m2 = r_m1[0], r_m2[0]
-        r_c1, r_c2 = clf.covariances_
-        c1, c2 = r_c1[0][0], r_c2[0][0]
-
-        # print("Means: ", clf.means_, "\n")
-        # print("Weights: ", clf.weights_, "\n")
-        # print("Precisions: ",  1/c1, " ", 1/c2, "\n")
-        # print("Covariances: ", c1, " ", c2, "\n")
 
         # Save the weights in the right array
         # Lower delta_thetax is the AM peak, higher CH
@@ -90,6 +72,45 @@ def fit_and_get_efficiency(input_groupby_obj):
         efficiency = weights_CH
     return efficiency
 
+def fit_and_get_efficiency_pyROOT(input_groupby_obj):
+    """
+    Function to be applied on a groupby to get channeling efficiency.
+
+    data: input dataset.
+
+    return: channeling efficiency (0 < efficiency < 1), basically
+            channeling peak weight.
+    """
+
+    rt.
+
+    ################# GET THE DATA FROM THE DATAFRAME
+    data = input_groupby_obj.reshape(-1, 1)
+
+    ################# FIT THE DATA
+    # Check that we have enough data for a fit, otherwise just return eff=0
+    efficiency = 0
+    if data.size > 10:
+        clf.fit(data)
+
+        r_m1, r_m2 = clf.means_
+        w1, w2 = clf.weights_
+        m1, m2 = r_m1[0], r_m2[0]
+
+        # Save the weights in the right array
+        # Lower delta_thetax is the AM peak, higher CH
+        if (m1 < m2):
+            weights_AM = w1
+            weights_CH = w2
+            means_AM = m1
+            means_CH = m2
+        else:
+            weights_AM = w2
+            weights_CH = w1
+            means_AM = m2
+            means_CH = m1
+        efficiency = weights_CH
+    return efficiency
 
 
 
@@ -147,14 +168,14 @@ evts = pd.read_hdf(file_name, chunksize = chunksize, columns=interesting_columns
 
 loaded_rows = 0
 events = pd.DataFrame(columns=interesting_columns)
-print("[LOG]: Loading data...")
+print "[LOG]: Loading data..."
 for df in evts:
     loaded_rows = loaded_rows + df.shape[0]
     print("\n[LOG] loaded ", loaded_rows, " rows\n")
     df.info()
     events = events.append(df,ignore_index=True) # join inner maybe unnecessary here
     # break; # Uncomment to get only the first chunk
-print("\n[LOG]: Loaded data!\n")
+print "\n[LOG]: Loaded data!\n"
 events.info()
 
 events["Delta_Theta_x"] = 1e6*events.loc[:,'Tracks_thetaOut_x'].values - 1e6*events.loc[:,'Tracks_thetaIn_x'].values
@@ -163,11 +184,9 @@ events["Tracks_thetaIn_x"] = 1e6*events["Tracks_thetaIn_x"]
 
 
 ################# BIN THE DATA
-d0y_nbins  = 60
-thetain_x_nbins = 60
 gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
 #                        (-2,2),(-30e-5,30e-5),17*4,12*4)
-                        (-2,2), (-30,30), d0y_nbins, thetain_x_nbins)
+                        (-2,2),(-30,30),60,60)
 # efficiency_histo = {}
 # clf = mixture.GaussianMixture(
 #     n_components=2,
@@ -218,27 +237,14 @@ gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
 
 # data = (gruppo.loc[:,"Tracks_thetaOut_x"].values - \
 #         gruppo.loc[:,"Tracks_thetaIn_x"].values).reshape(-1, 1)
-
 efficiencies = gruppi["Delta_Theta_x"].aggregate(fit_and_get_efficiency)
 
-grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
-plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
-           bins=[d0y_nbins, thetain_x_nbins]) # TODO
-plt.show()
-
-# FIT THE TORSION
-plt.figure()
-avg_Delta_Theta_x = [np.average(efficiencies.xs(xx,level=0).index.values, \
-                    weights=efficiencies.xs(xx,level=0).values) for xx \
-                    in efficiencies.xs(0.5,level=1).index.values]
-plt.plot(avg_Delta_Theta_x)
-plt.show()
-
-
-# # Plot as 2D array
-# eunst = efficiencies.unstack(fill_value=0.0)
-# eff_arr = np.transpose([list(eunst.iloc[i]) for i in range(eunst.index.size)])
-# plt.imshow(eff_arr)
+# grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
+# plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1],weights=efficiencies.values)
 # plt.show()
+eunst = efficiencies.unstack(fill_value=0.0)
+eff_arr = np.transpose([list(eunst.iloc[i]) for i in range(eunst.index.size)])
+plt.imshow(eff_arr)
+plt.show()
 
 #################
