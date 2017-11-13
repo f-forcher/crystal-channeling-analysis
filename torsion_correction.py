@@ -7,6 +7,7 @@ import pandas as pd
 import sys
 from itertools import islice
 from scipy import signal # To find peaks, for edge-detecting the crystal
+from scipy.optimize import curve_fit
 import os
 from sklearn import mixture
 import random
@@ -19,6 +20,9 @@ from bin_dataframe import bin2D_dataframe
 
 ######################################
 ################# FUNCTIONS
+def gaussian(x, mu, sig):
+    return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
 
 def fit_and_get_efficiency(input_groupby_obj):
     """
@@ -231,7 +235,11 @@ plt.figure()
 avg_Delta_Theta_x = [np.average(efficiencies.xs(xx,level=0).index.values, \
                     weights=efficiencies.xs(xx,level=0).values) for xx \
                     in efficiencies.xs(0.5,level=1).index.values]
-plt.plot(avg_Delta_Theta_x)
+avg_Delta_Theta_x_fit = [curve_fit(gaussian,efficiencies.xs(xx,level=0).index.values,efficiencies.xs(xx,level=0).values,method="dogbox",loss="huber")[0][0] for xx \
+                    in efficiencies.xs(0.5,level=1).index.values]
+plt.plot(avg_Delta_Theta_x,label="avg")
+plt.plot(avg_Delta_Theta_x_fit, label="fit")
+plt.legend()
 plt.show()
 
 
