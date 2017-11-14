@@ -23,6 +23,8 @@ from bin_dataframe import bin2D_dataframe
 def gaussian(x, mu, sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
+def line(x, m, q):
+    return m*x + q
 
 def fit_and_get_efficiency(input_groupby_obj):
     """
@@ -38,19 +40,19 @@ def fit_and_get_efficiency(input_groupby_obj):
         covariance_type='full',
         verbose=0,
         verbose_interval=10,
-        random_state=random.SystemRandom().randrange(0, 4095),
+        random_state=random.SystemRandom().randrange(0,2147483647), # 2**31-1
         means_init=[[0], [50]],
     #        weights_init=[1 / 2, 1 / 2],
         init_params="kmeans",
         n_init = 2,
         tol=1e-6,
-        precisions_init = [[[1/15]],[[1/15]]],
+        precisions_init = [[[1/16]],[[1/16]]],
         #warm_start=True,
         max_iter=100)
 
     ################# GET THE DATA FROM THE DATAFRAME
-    lowest_percentage = 10
-    highest_percentage = 90
+    lowest_percentage = 5
+    highest_percentage = 95
     first_percentile = np.percentile(input_groupby_obj, lowest_percentage)
     last_percentile = np.percentile(input_groupby_obj, highest_percentage)
     data_reduced = input_groupby_obj.values[(input_groupby_obj.values>=first_percentile) & (input_groupby_obj.values<=last_percentile)]
@@ -60,12 +62,13 @@ def fit_and_get_efficiency(input_groupby_obj):
 
     ################# FIT THE DATA
     # Check that we have enough data for a fit, otherwise just return eff=0
-    efficiency = 0
-    if data.size > 10:
+    efficiency = np.NaN
+    if data.size > 50:
         clf.fit(data)
 
-        # if not clf.converged_:
-        #     return 0
+        if not clf.converged_:
+            print("[LOG]: Fit did not converge in this bin, returning NaN")
+            efficiency = np.NaN
 
 
         r_m1, r_m2 = clf.means_
@@ -92,6 +95,9 @@ def fit_and_get_efficiency(input_groupby_obj):
             means_AM = m2
             means_CH = m1
         efficiency = weights_CH
+    else:
+        print("[LOG]: Too few data for this bin, returning NaN")
+        efficiency = np.NaN
     return efficiency
 
 
@@ -232,16 +238,24 @@ plt.show()
 
 # FIT THE TORSION
 plt.figure()
-avg_Delta_Theta_x = [np.average(efficiencies.xs(xx,level=0).index.values, \
-                    weights=efficiencies.xs(xx,level=0).values) for xx \
-                    in efficiencies.xs(0.5,level=1).index.values]
-avg_Delta_Theta_x_fit = [curve_fit(gaussian,efficiencies.xs(xx,level=0).index.values,efficiencies.xs(xx,level=0).values,method="dogbox",loss="huber")[0][0] for xx \
-                    in efficiencies.xs(0.5,level=1).index.values]
-plt.plot(avg_Delta_Theta_x,label="avg")
-plt.plot(avg_Delta_Theta_x_fit, label="fit")
+avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.values, \
+                    weights=efficiencies.dropna().xs(xx,level=0).values) for xx \
+                    in efficiencies.dropna().xs(0.5,level=1).index.values]
+avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.dropna().xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
+                    in efficiencies.dropna().xs(0.5,level=1).index.values]
+# avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
+#                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="avg")
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="fit no NaN")
+# plt.plot(avg_Delta_Theta_x_fit_NaNzero, "-", label="fit NaN zero")
+line_par, line_par_cov = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN)
+p, pc = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x)
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par))
 plt.legend()
 plt.show()
 
+line_par_err = np.sqrt(np.diag(line_par_cov))
+pe = np.sqrt(np.diag(pc))
 
 # # Plot as 2D array
 # eunst = efficiencies.unstack(fill_value=0.0)
