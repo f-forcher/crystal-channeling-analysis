@@ -1,6 +1,8 @@
 # File for my utility functions
 from bisect import bisect_left
 import pandas as pd
+import os
+
 
 # Controllare output
 def hist_get_bin(df, point):
@@ -14,7 +16,7 @@ def hist_get_bin(df, point):
     point: tuple of size (df.index.nlevels,), the point whose bin we want.
 
     return: the content of the bin (can be a DataFrame if df is a GroupBy
-    object).
+            object).
     """
     bin_coordinates = list()
 
@@ -66,3 +68,87 @@ def take_closest(myList, myNumber):
        return after
     else:
        return before
+
+def get_parameters_from_csv(csv_file, *args):
+    """
+    Get parameters from a csv file. The syntax of the csv allows comments using
+    '#' as prefix and tab as separator.
+
+    Example .csv:
+    parameter_name	value
+    init_scan	1570674.0
+    xmin	0.0
+    xmax	0.475
+
+    Example use:
+    >>> a0, b1, c2 = get_parameters_from_csv("conf/file.csv","a0","b1","c2")
+
+    csv_file: file name of the csv.
+
+    *args: list of strings with the parameters' names.
+
+    return: tuple containing the retrieved parameters, in the same order as the
+            function argument (see example above for correct use).
+    """
+    if os.path.isfile(csv_file):
+        # read up the parameters (like init_scan)
+        parameters_table = pd.read_csv(csv_file,
+                           sep="\t", index_col=0, comment="#")
+    else: #
+        raise FileNotFoundError("[ERROR]: parameter .csv file not found. "
+                                "Create it with save_as_hdf.py")
+    values = list()
+    for p in args:
+        values.append(parameters_table.loc[p].values[0])
+    if len(values) == 1:
+        # Extract the value from the values array if it's only one variable
+        # So for example in assigments like
+        # >>> x = get_parameters_from_csv("f.csv", "x")
+        # x will be a scalar like 10, and not [10]
+        return values[0]
+    else:
+        # Python already unzips if one assigns to multiple vars:
+        # >>> x,y = get_parameters_from_csv("f.csv", "x", "y")
+        # x,y already scalars in this case
+        return values
+
+def save_parameters_in_csv(csv_file, **kwargs):
+    """
+    Save parameters in a csv file, if the file does not exist create it,
+    otherwise append to it. If the parameters to write already exist in the file
+    it will overwrite them
+
+    Example .csv:
+    parameter_name	value
+    init_scan	1570674.0
+    xmin	0.0
+    xmax	0.475
+
+    Example use:
+    >>> a0, b1, c2 = get_parameters_from_csv("conf/file.csv",a0=1,b1=-1,c2=1e10)
+
+    csv_file: file name of the csv.
+
+    *kwargs: keyword (var_name=value) arguments, 'var_name' will be the name of
+             the parameter in file and 'value' will be its value (see example
+             above).
+
+    return: void
+    """
+    if os.path.isfile(csv_file):
+        # read up the already existing parameters (like init_scan)
+        parameters_table = pd.read_csv(csv_file,
+                                       sep="\t", index_col=0, comment="#")
+    else:
+        parameters_table = pd.DataFrame({"parameter_name": [],
+                                        "value": []})
+        parameters_table.set_index("parameter_name",inplace=True)
+
+    for var_name,value in kwargs.items():
+        if var_name in parameters_table.index:
+            print("[LOG]: Overwriting parameter already in csv: '{}' = {} -> {}"
+                        .format(var_name,parameters_table.loc[var_name].value,value))
+
+        parameters_table.loc[var_name] = value
+
+    parameters_table.to_csv(csv_file,sep='\t')

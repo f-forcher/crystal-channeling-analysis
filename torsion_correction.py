@@ -16,7 +16,7 @@ import random
 # MY LIBS
 import editable_input as ei # My script for editable text input
 from bin_dataframe import bin2D_dataframe
-
+import mie_utils as my
 
 ######################################
 ################# FUNCTIONS
@@ -48,7 +48,7 @@ def fit_and_get_efficiency(input_groupby_obj):
         tol=1e-6,
         precisions_init = [[[1/16]],[[1/16]]],
         #warm_start=True,
-        max_iter=100)
+        max_iter=200)
 
     ################# GET THE DATA FROM THE DATAFRAME
     lowest_percentage = 5
@@ -67,7 +67,7 @@ def fit_and_get_efficiency(input_groupby_obj):
         clf.fit(data)
 
         if not clf.converged_:
-            print("[LOG]: Fit did not converge in this bin, returning NaN")
+            print("[LOG]: Fit did not converge in this bin, bin ignored")
             efficiency = np.NaN
 
 
@@ -96,7 +96,7 @@ def fit_and_get_efficiency(input_groupby_obj):
             means_CH = m1
         efficiency = weights_CH
     else:
-        print("[LOG]: Too few data for this bin, returning NaN")
+        print("[LOG]: Too few data for this bin, bin ignored")
         efficiency = np.NaN
     return efficiency
 
@@ -256,6 +256,16 @@ plt.show()
 
 line_par_err = np.sqrt(np.diag(line_par_cov))
 pe = np.sqrt(np.diag(pc))
+
+print("m: {:.5} +- {:.5}\nq: {:.5} +- {:.5}".format(line_par[0], line_par_err[0],
+                                                  line_par[1], line_par_err[1]))
+
+# SAVE PARAMETERS TO FILE
+my.save_parameters_in_csv("crystal_analysis_parameters.csv",
+                            torsion_m=line_par[0],
+                            torsion_m_err=line_par_err[0],
+                            torsion_q=line_par[1],
+                            torsion_q_err=line_par_err[1],)
 
 # # Plot as 2D array
 # eunst = efficiencies.unstack(fill_value=0.0)

@@ -38,7 +38,6 @@ for df in evts:
 
 
 # TODO Commentare qua sta roba convoluta
-# init_scan = 11 # TODO prenderlo dalla relativa colonna del root/hdf
 parameters_table = pd.DataFrame({"parameter_name": ["init_scan"], "value": [init_scan]})
 parameters_table.set_index("parameter_name",inplace=True)
 
