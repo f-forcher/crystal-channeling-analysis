@@ -1,0 +1,80 @@
+Name,Purpose,H8 bending angle (urad),Width (x) (mm),Lenght (z) (mm),Fabrication,H8 test,Crystal Type,Manufacturer
+STF98,N.I. studies,,1.017,1.968,02/2015,02/13/2015,Silicon strip - plane (110) - axis ,INFN
+STF101,N.I. studies,,1.004,1.988,02/2015,"02/12/2015, 05/03/2015",Silicon strip - plane (110) - axis ,INFN
+STF99,N.I. studies,100,2.008,1.994,02/2015,"02/14/2015, 05/01/2015",Silicon strip - plane (110) - axis ,INFN
+STF100,N.I. studies,,1.024,1.954,02/2015,"02/12/2015, 05/02/2015, 06/04/2015",Silicon strip - plane (110) - axis ,INFN
+QMP32,SPS,160,N/A,0.96,08/2011,10/13/2014,Quasi-mosaic,PNPI
+QMP33,LHC (after LS1),42,N/A,4,06/2013,10/13/2014,Quasi-mosaic,PNPI
+STF76,LHC (after LS1),70,0.5,4,08/2013,"10/13/2014, 04/01/2015, 02/13/2015",Strip,INFN
+QMP36,SPS,175,N/A,0.5,06/2014,10/13/2014,Quasi-mosaic,PNPI
+STF9,SPS,125,0.5,2,03/2015,10/13/2014,Strip,INFN
+QMP37,SPS,,5,2,11/2014,,Quasi-mosaic,PNPI
+QMP38,SPS,145,5,4,11/2014,12/10/2014,Quasi-mosaic,PNPI
+QMP39,SPS,160,5,4,11/2014,12/10/2014,Quasi-mosaic,PNPI
+STF50,SPS,,1,2,08/2011,07/01/2012,Strip,INFN
+STF51,LHC (before LS1),,2,3,08/2011,07/01/2012,Strip,INFN
+QMP28,LHC (before LS1),,N/A,6,,07/01/2012,Quasi-mosaic,PNPI
+QMP29,LHC (before LS1),,N/A,6,,07/01/2012,Quasi-mosaic,PNPI
+QMP26,LHC (before LS1),,18,1.973,,07/01/2012,Quasi-mosaic,PNPI
+STF70,LHC (before LS1),,1,3,,10/10/2012,Strip,INFN
+STF71,LHC (before LS1),,1,3,,10/10/2012,Strip,INFN
+STF72,SPS,,1,2,,10/10/2012,Strip,INFN
+STF47,,45,2,3.1,08/2011,09/09/2011,Strip,INFN
+STF48,,170,1,2,08/2011,09/10/2011,Strip,INFN
+STF49,,246,0.5,0.8,08/2011,09/11/2011,Strip,INFN
+STF45A,,150,0.3,2,,09/30/2010,Strip,INFN
+STF40A,,150,0.475,1,,09/29/2010,Strip,INFN
+STF38A,,208,1,1.89,,09/29/2010,Strip,INFN
+QMP27,,116,N/A,1.77,,,Quasi-mosaic,PNPI
+QMP30,,,N/A,10,,,Quasi-mosaic,PNPI
+QMP31,,,N/A,10,,,Quasi-mosaic,PNPI
+MSI14-3,SPS,800,0.31,1.5,11/2014,12/12/2014,Multistrip,IHEP
+MSI14-2,SPS,,0.91,2,11/2014,12/13/2014,Multistrip,IHEP
+MSI14-1,SPS,200,0.91,2.5,11/2014,12/14/2014,Multistrip,IHEP
+MSI14-4,SPS,,2,2,11/2014,12/14/2014,Multistrip,IHEP
+MSI14-5,SPS,200-250,5,2.5,11/2014,12/14/2014,Multistrip,IHEP
+MSI14-6,SPS,,4,2,11/2014,11/14/2014,Multistrip,IHEP
+MSI14-7,SPS,,4,Variable,11/2014,12/14/2014,Multistrip,IHEP
+MSTF-13,SPS,500,1,1.28,11/2014,12/13/2014,Multistrip,INFN
+MSTI12-1,,,N/A,N/A,,,Multistrip,IHEP
+MSTI12-2,,,N/A,N/A,,,Multistrip,IHEP
+C33,,,3,300,09/2012,10/13/2012,Strip,PNPI
+TFF2,,0,10 (5 of active region),0.016,,,Thin mirror,INFN
+STFVR1,NI in VR,,1,2,,,Strip,INFN
+STFVR2,NI in VR,,1,2,,,Strip,INFN
+STFVR3,NI in VR,,1,2,,,Strip,INFN
+STFVR4,NI in VR,,1,2,,,Strip,INFN
+TFP1,,0,5,0.025,,09/12/2011,Thin flat (straight),PNPI
+MSTI11,,,0.3,1.8,,,Multistrip,IHEP
+STI11-1,,350,900,3,,,Strip,IHEP
+TFF1,,0,10 (5 of active region),0.028,09/2011,,Thin flat,INFN
+PXRF1,,0,0.4,1,09/2011,,Strip (flat),INFN
+PXRF2,,0,0.4,2,09/2011,,Strip (flat),INFN
+MSTF,SPS?,210,0.3,1,,,Multistrip,INFN
+STF18,N/A,176,0.5,2,,,Strip,INFN
+STF81,N/A,165,0.5,1.87,,,Strip,INFN
+QMP35,N/A,175 ??10,N/A,0.47,,,Quasi-mosaic,PNPI
+MSTI13,N/A,97.5,1,1.28,,,Multistrip,INFN
+QMP15,N/A,140,18,1.976,,,Quasi-mosaic,PNPI
+QMP25,SPS,165,30.5,2.1,,,Quasi-mosaic,PNPI
+MSTI2,N/A,N/A,0.9,2.4,,,Multistrip,IHEP
+STF75,N/A,N/A,N/A,4,,,Strip,INFN
+QMP34,N/A,N/A,N/A,4,12/2013,,Quasi-mosaic,PNPI
+QMP15B,N/A,N/A,18,1.6,,,Quasi-mosaic,PNPI
+MSTF16,N/A,N/A,N/A,1??0.05,,,Multi-strip,INFN
+STF102,N. I. studies,N/A,0.505,0.971,04/2015,05/04/2015,Silicon strip - plane (110) - axis ,INFN
+STF103,N. I. studies,N/A,1.97,1.881,04/2015,05/06/2015,Silicon strip - plane (110) - axis ,INFN
+STF104,N/A,N/A,1.97,0.911,04/2015,06/04/2015,Silicon strip - plane (110) - axis ,INFN
+STF105,LHC (after LS1),49??1,0.55??0.02,4.07??0.02,05/2015,06/06/2015,Silicon strip - plane (110) - axis ,INFN
+STF106,LHC (after LS1),41.5??1.5,0.55??0.02 ,4.08??0.02 ,05/2015,06/29/2015,Silicon strip - plane (110) - axis ,INFN
+QMP46, LHC (after LS1),51,30,25,04/2015,"04/29/2015, 05/05/2015, 06/30/2016, 07/05/2016",Quasi mosaic,PNPI
+QMP52,LHC (after LS1),54,30,25,04/2015,"05/03/2015, 06/30/2016, 07/05/2016",Quasi mosaic,PNPI
+QMP53,LHC (after LS1),56,30,25,04/2015,"05/03/2015, 06/30/2016, 07/05/2016",Quasi mosaic,PNPI
+PL03,N/A,322,1,56.8,11/2016,11/07/2016,Strip - anticlastic curvature,INFN-Fe
+PL04,N/A,284.5,0.3,20,11/2016,11/07/2016,Crystal bent through silicon nitride film deposition,INFN-Fe
+PL05,N/A,~ 1600 (no good data),1,54.8,11/2016,11/07/2016,Crystal bent through a surface plasticization ,INFN-Fe
+STF107,LHC collimation,55,0.55,4,11/2016,11/11/2016,Strip - anticlastic curvature,INFN-Fe
+QMP54,N/A,55,30,4,11/2016,11/25/2016,QM for LHC,PNPI
+Test PNPI test,N/A,111,10,30,06/2017,10/11/2017,Test type,PNPI
+,,,,,,,,
+STF110,,55,0.55,4,,,,

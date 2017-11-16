@@ -128,7 +128,7 @@ else: #
 
 cut_left = float(parameters_table.loc['xmin'])
 cut_right = float(parameters_table.loc['xmax'])
-# init_scan = float(parameters_table.loc['init_scan']) # Not needed here
+init_scan = float(parameters_table.loc['init_scan'])
 #################
 
 
@@ -167,8 +167,11 @@ for df in evts:
 print("\n[LOG]: Loaded data!\n")
 events.info()
 
-events["Delta_Theta_x"] = 1e6*events.loc[:,'Tracks_thetaOut_x'].values - 1e6*events.loc[:,'Tracks_thetaIn_x'].values
+# Change angular units to microradians
+events["Delta_Theta_x"] = 1e6*(events.loc[:,'Tracks_thetaOut_x'].values -
+                               events.loc[:,'Tracks_thetaIn_x'].values)
 events["Tracks_thetaIn_x"] = 1e6*events["Tracks_thetaIn_x"]
+events['Tracks_thetaOut_x'] = 1e6*events['Tracks_thetaOut_x']
 #################
 
 
@@ -231,6 +234,12 @@ gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
 
 efficiencies = gruppi["Delta_Theta_x"].aggregate(fit_and_get_efficiency)
 
+#
+# # Plot as 2D array
+# eunst = efficiencies.unstack(fill_value=0.0)
+# eff_arr = np.transpose([list(eunst.iloc[i]) for i in range(eunst.index.size)])
+# plt.imshow(eff_arr)
+# plt.show()
 grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
 plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
            bins=[d0y_nbins, thetain_x_nbins]) # TODO
@@ -260,17 +269,31 @@ pe = np.sqrt(np.diag(pc))
 print("m: {:.5} +- {:.5}\nq: {:.5} +- {:.5}".format(line_par[0], line_par_err[0],
                                                   line_par[1], line_par_err[1]))
 
-# SAVE PARAMETERS TO FILE
+################# SAVE PARAMETERS TO FILE
+tor_m = line_par[0]
+tor_q = line_par[1]
 my.save_parameters_in_csv("crystal_analysis_parameters.csv",
                             torsion_m=line_par[0],
                             torsion_m_err=line_par_err[0],
                             torsion_q=line_par[1],
                             torsion_q_err=line_par_err[1],)
+#################
 
-# # Plot as 2D array
-# eunst = efficiencies.unstack(fill_value=0.0)
-# eff_arr = np.transpose([list(eunst.iloc[i]) for i in range(eunst.index.size)])
-# plt.imshow(eff_arr)
-# plt.show()
 
+################# CORRECT FOR TORSION AND SHOW THE PLOT
+events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
+                              (tor_m*events["Tracks_d0_y"]+tor_q))# + init_scan
+plt.figure()
+plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
+bins=[400,200], norm=LogNorm(),
+ range=[[-100,100], [-80,120]])
+plt.show()
+#################
+
+
+################# SAVE TO HDF FILE THE CORRECTED DATA
+events.to_hdf("torsion_corrected_"+file_name+".hdf","simpleEvent",
+                format="table",
+                fletcher32=True, mode="a", complevel=9, append=False,
+                data_columns=['Tracks_thetaIn_x', 'Tracks_thetaOut_x'])
 #################
