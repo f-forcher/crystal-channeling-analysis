@@ -285,8 +285,7 @@ events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
                               (tor_m*events["Tracks_d0_y"]+tor_q))# + init_scan
 plt.figure()
 plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
-bins=[400,200], norm=LogNorm(),
- range=[[-100,100], [-80,120]])
+bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
 plt.show()
 #################
 
