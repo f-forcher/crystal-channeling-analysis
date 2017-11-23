@@ -26,6 +26,11 @@ def robust_standard_deviation(x, lowest_percentage, highest_percentage):
     highest_percentage: highest percentage to include (0<=highest_percentage<=s100)
     return: robust standard deviation (scalar)
     """
+
+    if len(x) < 5:
+        print("[LOG]: too few data in slice, std set to zero")
+        return 0
+
     first_percentile = np.percentile(x, lowest_percentage)
     last_percentile = np.percentile(x, highest_percentage)
     #
@@ -38,7 +43,14 @@ def robust_standard_deviation(x, lowest_percentage, highest_percentage):
 
 plt.ion()
 file_name = sys.argv[1]
+crystal_name = sys.argv[2]
+run_number = sys.argv[3]
 
+# Check if the run number is in the actual data file name, otherwise print a
+# warning
+if '_'+run_number+'_' not in "CHAN_recoDataSimple_4372_5plane_0_ini.root.hdf":
+    print("[WARNING]: '_{}_' not found in file name '{}', maybe check if "
+          "correct run number or correct file.".format(run_number, file_name))
 
 # LOAD DATAFRAME FROM HDF FILE
 # DATAFRAME COLUMNS:
@@ -66,7 +78,7 @@ print("[LOG]: Loading data...")
 for df in evts:
     loaded_rows = loaded_rows + df.shape[0]
     print("\n[LOG] loaded ", loaded_rows, " rows\n")
-    df.info()
+    # df.info() # Print info on the loaded rows
     events = events.append(df,ignore_index=True) # join inner maybe unnecessary here
     # break; # Uncomment to get only the first chunk
 print("[LOG]: Loaded data!")
@@ -75,7 +87,7 @@ print("[LOG]: Loaded data!")
 events["Delta_Theta_x"] = events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values
 
 histo_range_x = [-5,5] # [mm]
-histo_range_y = [-100e-6,100e-6] # [rad]
+histo_range_y = [-100,100] # [murad]
 numbin = 400
 
 
@@ -139,12 +151,15 @@ proposed_cut_right = right_edge - side_bins_to_cut * x_bin_width
 
 
 ################ PLOT HISTOGRAM
-plt.hist2d(events.loc[:,'Tracks_d0_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
+plt.hist2d(events.loc[:,'Tracks_d0_x'].values, 1e6*(events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values),\
 bins=numbin, norm=LogNorm(), range=[histo_range_x,histo_range_y])
 plt.axvline(x=proposed_cut_left, linestyle="dashed", color='Crimson', label="")
 plt.axvline(x=proposed_cut_right, linestyle="dashed", color='Crimson', label="")
 
 
+plt.title(r"Crystal {}, run {} - Histogram: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
+plt.xlabel(r'$x_{in}\ [mm]$')
+plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 # print(events)
 plt.colorbar()
 plt.show()
