@@ -33,7 +33,7 @@ def robust_standard_deviation(x, lowest_percentage, highest_percentage):
 
     first_percentile = np.percentile(x, lowest_percentage)
     last_percentile = np.percentile(x, highest_percentage)
-    #
+    #CH3287095
     x_reduced = x[(x>=first_percentile) & (x<=last_percentile)]
     #
     robust_std = x_reduced.std()
@@ -48,7 +48,7 @@ run_number = sys.argv[3]
 
 # Check if the run number is in the actual data file name, otherwise print a
 # warning
-if '_'+run_number+'_' not in "CHAN_recoDataSimple_4372_5plane_0_ini.root.hdf":
+if '_'+run_number+'_' not in file_name:
     print("[WARNING]: '_{}_' not found in file name '{}', maybe check if "
           "correct run number or correct file.".format(run_number, file_name))
 
@@ -162,6 +162,8 @@ plt.xlabel(r'$x_{in}\ [mm]$')
 plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 # print(events)
 plt.colorbar()
+plt.tight_layout()
+plt.savefig("latex/img/geocuts.pdf")
 plt.show()
 #################
 

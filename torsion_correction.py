@@ -119,6 +119,10 @@ def fit_and_get_efficiency(input_groupby_obj):
 #
 
 file_name = sys.argv[1]
+crystal_name = sys.argv[2]
+run_number = sys.argv[3]
+
+
 
 if os.path.isfile('crystal_analysis_parameters.csv'):
     parameters_table = pd.read_csv("crystal_analysis_parameters.csv", sep="\t", index_col=0)
@@ -234,15 +238,20 @@ gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
 
 efficiencies = gruppi["Delta_Theta_x"].aggregate(fit_and_get_efficiency)
 
+
+
 #
 # # Plot as 2D array
-# eunst = efficiencies.unstack(fill_value=0.0)
-# eff_arr = np.transpose([list(eunst.iloc[i]) for i in range(eunst.index.size)])
-# plt.imshow(eff_arr)
-# plt.show()
 grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
 plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
            bins=[d0y_nbins, thetain_x_nbins]) # TODO
+plt.title(r"Crystal {}, run {} - Efficiency as function of {}".format(crystal_name, run_number, r"$x_{in}$ and $\Delta \theta_{x}$"))
+plt.xlabel(r'$y_{in}\ [mm]$')
+plt.ylabel(r'$theta_{x_{in}}\ [\mu rad]$')
+# print(events)
+plt.colorbar()
+plt.tight_layout()
+plt.savefig("latex/img/efficiency_histo.pdf")
 plt.show()
 
 # FIT THE TORSION
@@ -254,14 +263,18 @@ avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,le
                     in efficiencies.dropna().xs(0.5,level=1).index.values]
 # avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
 #                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="avg")
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="fit no NaN")
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
 # plt.plot(avg_Delta_Theta_x_fit_NaNzero, "-", label="fit NaN zero")
-line_par, line_par_cov = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN)
+line_par, line_par_cov = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, method="dogbox", loss="cauchy")
 p, pc = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x)
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par))
+
+
+################# SAVE PARAMETERS TO FILE
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Eff. linear fit")
 plt.legend()
 plt.show()
+#################
 
 line_par_err = np.sqrt(np.diag(line_par_cov))
 pe = np.sqrt(np.diag(pc))
@@ -286,6 +299,13 @@ events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
 plt.figure()
 plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
 bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
+plt.title(r"Crystal {}, run {} - Histogram: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
+plt.xlabel(r'$theta_{x_{in}}\ [\mu rad]$')
+plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
+# print(events)
+plt.colorbar()
+plt.tight_layout()
+plt.savefig("latex/img/corrected_histo.pdf")
 plt.show()
 #################
 
