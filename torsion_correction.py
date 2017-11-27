@@ -270,9 +270,14 @@ line_par, line_par_cov = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_v
 p, pc = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x)
 
 
-################# SAVE PARAMETERS TO FILE
+################# SAVE FIT PLOT TO FILE
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Eff. linear fit")
+plt.title(r"Crystal {}, run {} — Torsion fit: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
+plt.xlabel(r'$y_{in}\ [mm]$')
+plt.ylabel(r'$theta_{x_{in}}\ [\mu rad]$')
+plt.tight_layout()
 plt.legend()
+plt.savefig("latex/img/torsion_fit.pdf")
 plt.show()
 #################
 
@@ -299,8 +304,8 @@ events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
 plt.figure()
 plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
 bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
-plt.title(r"Crystal {}, run {} - Histogram: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
-plt.xlabel(r'$theta_{x_{in}}\ [\mu rad]$')
+plt.title(r"Crystal {}, run {} — Histogram: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
+plt.xlabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 # print(events)
 plt.colorbar()

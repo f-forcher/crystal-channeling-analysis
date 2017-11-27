@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.8.23)  27 NOV 2017 19:33
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015/Debian) (preloaded format=xelatex 2017.8.23)  27 NOV 2017 20:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1423,22 +1423,30 @@ File: tikzlibraryangles.code.tex 2013/08/28 v3.0.1a (rcs-revision 1.1)
 zlibraryquotes.code.tex
 File: tikzlibraryquotes.code.tex 2014/03/21 v3.0.1a (rcs-revision 1.4)
 )
+(/usr/share/texlive/texmf-dist/tex/latex/enumitem/enumitem.sty
+Package: enumitem 2011/09/28 v3.5.2 Customized lists
+\labelindent=\skip75
+\enit@outerparindent=\dimen324
+\enit@toks=\toks55
+\enit@inbox=\box75
+\enitdp@description=\count287
+)
 (/usr/share/texlive/texmf-dist/tex/latex/textpos/textpos.sty
 Package: textpos 2014/01/03 v1.7j
 
 Package: textpos 2014/01/03 1.7j, absolute positioning of text on the page
-\TP@textbox=\box75
-\TP@holdbox=\box76
-\TPHorizModule=\dimen324
-\TPVertModule=\dimen325
-\TP@margin=\dimen326
-\TP@absmargin=\dimen327
+\TP@textbox=\box76
+\TP@holdbox=\box77
+\TPHorizModule=\dimen325
+\TPVertModule=\dimen326
+\TP@margin=\dimen327
+\TP@absmargin=\dimen328
 Grid set 16 x 16 = 22.7622pt x 17.07166pt
-\TPboxrulesize=\dimen328
-\TP@ox=\dimen329
-\TP@oy=\dimen330
-\TP@tbargs=\toks55
-\TP@prevdepth=\dimen331
+\TPboxrulesize=\dimen329
+\TP@ox=\dimen330
+\TP@oy=\dimen331
+\TP@tbargs=\toks56
+\TP@prevdepth=\dimen332
 TextBlockOrigin set to 0pt x 0pt
 ) (/usr/share/texlive/texmf-dist/tex/latex/environ/environ.sty
 Package: environ 2014/05/04 v0.3 A new way to define environments
@@ -1446,7 +1454,7 @@ Package: environ 2014/05/04 v0.3 A new way to define environments
 (/usr/share/texlive/texmf-dist/tex/latex/trimspaces/trimspaces.sty
 Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 ))
-\measure@tikzpicture=\box77
+\measure@tikzpicture=\box78
 
 (./test_gen-definitions.tex) (./pgfplotsthemetol.sty
 Package: pgfplotsthemetol 2017/01/23 PGFplots colors based on Paul Tol's SRON t
@@ -1455,30 +1463,30 @@ echnical note
 (./crystal_presentation.aux)
 \openout1 = `crystal_presentation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 197.
-LaTeX Font Info:    ... okay on input line 197.
-LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 197.
-LaTeX Font Info:    Try loading font information for T3+cmr on input line 197.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for EU1/lmr/m/n on input line 198.
+LaTeX Font Info:    ... okay on input line 198.
+LaTeX Font Info:    Checking defaults for T3/cmr/m/n on input line 198.
+LaTeX Font Info:    Try loading font information for T3+cmr on input line 198.
  (/usr/share/texmf/tex/latex/tipa/t3cmr.fd
 File: t3cmr.fd 2001/12/31 TIPA font definitions
 )
-LaTeX Font Info:    ... okay on input line 197.
+LaTeX Font Info:    ... okay on input line 198.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1515,8 +1523,8 @@ LaTeX Font Info:    ... okay on input line 197.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 ABD: EveryShipout initializing macros
-\AtBeginShipoutBox=\box78
-Package hyperref Info: Link coloring OFF on input line 197.
+\AtBeginShipoutBox=\box79
+Package hyperref Info: Link coloring OFF on input line 198.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -1524,11 +1532,11 @@ Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count287
+\c@section@level=\count288
 )
-LaTeX Info: Redefining \ref on input line 197.
-LaTeX Info: Redefining \pageref on input line 197.
-LaTeX Info: Redefining \nameref on input line 197.
+LaTeX Info: Redefining \ref on input line 198.
+LaTeX Info: Redefining \pageref on input line 198.
+LaTeX Info: Redefining \nameref on input line 198.
 
 (./crystal_presentation.out) (./crystal_presentation.out)
 \@outlinefile=\write5
@@ -1559,13 +1567,13 @@ Dictionary: translator-numbers-dictionary, Language: English
 orem-dictionary/translator-theorem-dictionary-English.dict
 Dictionary: translator-theorem-dictionary, Language: English 
 )
-LaTeX Info: Redefining \includegraphics on input line 197.
+LaTeX Info: Redefining \includegraphics on input line 198.
 
 Package pgfplots notification 'compat/show suggested version=true': you might b
 enefit from \pgfplotsset{compat=1.13} (current compat level: 1.9).
 
 (./crystal_presentation.nav)
-Overfull \vbox (42.4369pt too high) detected at line 210
+Overfull \vbox (42.4369pt too high) detected at line 211
  []
 
 File: img/CERN_LogoBadge.pdf Graphic file (type QTm)
@@ -1577,19 +1585,61 @@ File: img/be_dep_logo.pdf Graphic file (type QTm)
 File: ./img/geocuts.pdf Graphic file (type QTm)
 
 <use  "./img/geocuts.pdf" >
-LaTeX Font Info:    Try loading font information for U+msa on input line 245.
+File: img/CERN_LogoBadge_no_transparency.pdf Graphic file (type QTm)
+ <use  "img/CERN_LogoBadge_no_transparency.pdf" >
+Overfull \vbox (8.93098pt too high) detected at line 262
+ []
+
+[2
+
+]
+File: ./img/efficiency_histo.pdf Graphic file (type QTm)
+ <use  "./img/efficiency_histo.pdf" >
+File: img/CERN_LogoBadge_no_transparency.pdf Graphic file (type QTm)
+
+<use  "img/CERN_LogoBadge_no_transparency.pdf" > [3
+
+]
+File: ./img/torsion_fit.pdf Graphic file (type QTm)
+
+<use  "./img/torsion_fit.pdf" >
+LaTeX Font Info:    Try loading font information for U+msa on input line 326.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 245.
+LaTeX Font Info:    Try loading font information for U+msb on input line 326.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 File: img/CERN_LogoBadge_no_transparency.pdf Graphic file (type QTm)
 
-<use  "img/CERN_LogoBadge_no_transparency.pdf" > [2
+<use  "img/CERN_LogoBadge_no_transparency.pdf" > [4
+
+]
+File: ./img/corrected_histo.pdf Graphic file (type QTm)
+
+<use  "./img/corrected_histo.pdf" >
+File: img/CERN_LogoBadge_no_transparency.pdf Graphic file (type QTm)
+
+<use  "img/CERN_LogoBadge_no_transparency.pdf" > [5
+
+]
+File: ./img/half_thetac_chan_histo.pdf Graphic file (type QTm)
+
+<use  "./img/half_thetac_chan_histo.pdf" >
+File: img/CERN_LogoBadge_no_transparency.pdf Graphic file (type QTm)
+
+<use  "img/CERN_LogoBadge_no_transparency.pdf" > [6
+
+]
+File: ./img/thetac_chan_histo.pdf Graphic file (type QTm)
+
+<use  "./img/thetac_chan_histo.pdf" >
+File: img/CERN_LogoBadge_no_transparency.pdf Graphic file (type QTm)
+
+<use  "img/CERN_LogoBadge_no_transparency.pdf" > [7
 
 ]
 \tf@nav=\write6
@@ -1601,21 +1651,21 @@ File: img/CERN_LogoBadge_no_transparency.pdf Graphic file (type QTm)
 \tf@snm=\write8
 \openout8 = `crystal_presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 254.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 254.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 381.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 381.
 
 (./crystal_presentation.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 254.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 254.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 254.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 381.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 381.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 381.
  ) 
 Here is how much of TeX's memory you used:
- 46615 strings out of 493638
- 1054110 string characters out of 6146796
+ 47004 strings out of 493638
+ 1060992 string characters out of 6146796
  1180385 words of memory out of 5000000
- 49228 multiletter control sequences out of 15000+600000
- 6252 words of font info for 55 fonts, out of 8000000 for 9000
+ 49593 multiletter control sequences out of 15000+600000
+ 10945 words of font info for 79 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
  74i,17n,93p,10389b,1011s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on crystal_presentation.pdf (2 pages).
+Output written on crystal_presentation.pdf (7 pages).

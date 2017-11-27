@@ -224,20 +224,66 @@
 \metroset{titleformat section=smallcaps}
 \metroset{titleformat frame=smallcaps}
 
-% %------------------------------------------------
-% \section{Introduzione}
-% %------------------------------------------------
+%------------------------------------------------
+\section{Geometrical cuts}
+%------------------------------------------------
 % 
+% \begin{frame}
+% \frametitle{Geometrical cuts}
+% \begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
+% 
+% \column{.7\textwidth} % Left column and width
+% \begin{figure}
+% \includegraphics[width=\linewidth]{geocuts.pdf}\\
+% %\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
+% \end{figure}
+% 
+% \column{.3\textwidth} % Left column and width
+% Istogramma delle deflessioni a seconda dell'angolo d'ingresso.
+% 
+% \end{columns}
+% \end{frame}
+% 
+
 \begin{frame}
 \frametitle{Geometrical cuts}
-\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
 
-\column{.7\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=\linewidth]{geocuts.pdf}\\
-%\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
+\includegraphics[width=0.8\linewidth]{geocuts.pdf}\\
+\caption{\footnotesize \itshape Geometrical cuts in x: \xmin\ -> \xmax\ [mm]}
 \end{figure}
 
 \end{frame}
+
+%------------------------------------------------
+\section{Efficiency}
+%------------------------------------------------
+
+
+\begin{frame}
+\frametitle{Torsion analysis: efficiency}
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{efficiency_histo.pdf}\\
+%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Torsion analysis: efficiency fit}
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{efficiency_histo.pdf}\\
+%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
+\end{frame}
+
+
+
+
+
 
 \end{document} 

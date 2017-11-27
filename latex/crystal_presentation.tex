@@ -100,6 +100,7 @@
 \usetikzlibrary{plotmarks} % https://tex.stackexchange.com/questions/140963/draw-a-filled-circle-at-every-point-of-a-tikz-plot#140967
 %\usepackage{textpos}
 \usepackage{pgf}
+\usepackage{enumitem}
 
 \usepackage{etoolbox} % For ifdef in footer
 \usepackage[absolute, overlay]{textpos}
@@ -224,27 +225,154 @@
 \metroset{titleformat section=smallcaps}
 \metroset{titleformat frame=smallcaps}
 
-% %------------------------------------------------
-% \section{Introduzione}
-% %------------------------------------------------
+
+
+
+
+
+%------------------------------------------------
+\section{Geometrical cuts}
+%------------------------------------------------
 % 
+% \begin{frame}
+% \frametitle{Geometrical cuts}
+% \begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
+% 
+% \column{.7\textwidth} % Left column and width
+% \begin{figure}
+% \includegraphics[width=\linewidth]{geocuts.pdf}\\
+% %\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
+% \end{figure}
+% 
+% \column{.3\textwidth} % Left column and width
+% Istogramma delle deflessioni a seconda dell'angolo d'ingresso.
+% 
+% \end{columns}
+% \end{frame}
+% 
+
 \begin{frame}
 \frametitle{Geometrical cuts}
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{geocuts.pdf}\\
+\caption{\footnotesize \itshape Geometrical cuts in x: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+%------------------------------------------------
+\section{Torsion correction}
+%------------------------------------------------
+
+
+
+\begin{frame}
+\frametitle{Torsion analysis: efficiency}
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{efficiency_histo.pdf}\\
+%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
+\end{frame}
+
+
+
+
+% \begin{frame}
+% \frametitle{Torsion analysis: efficiency fit}
+% 
+% \begin{figure}
+% \includegraphics[width=0.8\linewidth]{torsion_fit.pdf}\\
+% \caption{\footnotesize \itshape Efficiency fit: m: \torsionm\ [$\mu$rad / mm] --- q: \torsionq\ [$\mu$rad]}
+% \end{figure}
+% 
+% \end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Torsion analysis: efficiency fit}
+
 \begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
 
 \column{.7\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=\linewidth]{geocuts.pdf}\\
+\includegraphics[width=\linewidth]{torsion_fit.pdf}\\
 %\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
 \column{.3\textwidth} % Left column and width
+Efficiency fit:
+\begin{itemize}[leftmargin=*]
+ \item m: \torsionm\ [$\mu$rad/mm]
+ \item q: \torsionq\ [$\mu$rad]
+\end{itemize}
 
-Istogramma delle deflessioni a seconda dell'angolo d'ingresso.
+
 \end{columns}
 \end{frame}
 
 
+
+
+\begin{frame}
+\frametitle{Torsion analysis: corrected histogram}
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{corrected_histo.pdf}\\
+%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+%------------------------------------------------
+\section{Channeling analysis}
+%------------------------------------------------
+
+\begin{frame}
+\frametitle{Channeling fit: cut at $\pm \frac{\theta_c}{2}$: half critical angle}
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{half_thetac_chan_histo.pdf}\\
+%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Channeling fit: cut at $\pm \theta_c$: critical angle}
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth]{thetac_chan_histo.pdf}\\
+%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
+\end{frame}
 
 
 
