@@ -238,17 +238,6 @@
 %\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
-\column{.3\textwidth} % Left column and width
-
-Istogramma delle deflessioni a seconda dell'angolo d'ingresso.
-\end{columns}
 \end{frame}
-
-
-
-
-
-
-
 
 \end{document} 
