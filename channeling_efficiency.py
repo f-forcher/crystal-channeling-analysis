@@ -205,8 +205,9 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     plt.plot(x_histo, gauss_AM, label="Amorphous Peak", color='r')
     plt.plot(x_histo, gauss_CH, label="Channeling Peak", color='Orange')
     thetac_title = r"$\theta_c/2$" if i == 0 else r"$\theta_c$"
-    plt.suptitle(r"Crystal {}, run {} — Channeling, cut ± {}".format(crystal_name, run_number,thetac_title),fontweight='bold')
-    plt.title(r"Efficiency {:.3}% — Bending Angle {:.3} {} — ".format(fit_results["weight_CH"]*100, fit_results["mean_CH"],r"$[\mu rad]$"))
+    cut_value = theta_c/2 if i == 0 else theta_c
+    plt.suptitle(r"Crystal {}, run {} — Channeling, cut ± {} = ±{:.3}".format(crystal_name, run_number,thetac_title, cut_value),fontweight='bold')
+    plt.title(r"Efficiency {:.3}% — Bending Angle {:.3} {}".format(fit_results["weight_CH"]*100, fit_results["mean_CH"],r"$[\mu rad]$"))
     plt.xlabel(r'$\Delta \theta_{x}\ [\mu rad]$')
     plt.ylabel('Frequency')
     plt.legend()
