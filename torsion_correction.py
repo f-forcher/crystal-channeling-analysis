@@ -240,12 +240,32 @@ efficiencies = gruppi["Delta_Theta_x"].aggregate(fit_and_get_efficiency)
 
 
 
+
+# FIT THE TORSION
+avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.values, \
+                    weights=efficiencies.dropna().xs(xx,level=0).values) for xx \
+                    in efficiencies.dropna().xs(0.5,level=1).index.values]
+avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.dropna().xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
+                    in efficiencies.dropna().xs(0.5,level=1).index.values]
+# avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
+#                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]
+#plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
+#plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
+# plt.plot(avg_Delta_Theta_x_fit_NaNzero, "-", label="fit NaN zero")
+line_par, line_par_cov = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, method="dogbox", loss="cauchy")
+p, pc = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x)
+
+
 #
 # # Plot as 2D array
+plt.figure()
 grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
 plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
            bins=[d0y_nbins, thetain_x_nbins]) # TODO
 plt.title(r"Crystal {}, run {} - Efficiency as function of {}".format(crystal_name, run_number, r"$x_{in}$ and $\Delta \theta_{x}$"))
+#plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
+#plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
 plt.xlabel(r'$y_{in}\ [mm]$')
 plt.ylabel(r'$theta_{x_{in}}\ [\mu rad]$')
 # print(events)
@@ -254,24 +274,14 @@ plt.tight_layout()
 plt.savefig("latex/img/efficiency_histo.pdf")
 plt.show()
 
-# FIT THE TORSION
-plt.figure()
-avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.values, \
-                    weights=efficiencies.dropna().xs(xx,level=0).values) for xx \
-                    in efficiencies.dropna().xs(0.5,level=1).index.values]
-avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.dropna().xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
-                    in efficiencies.dropna().xs(0.5,level=1).index.values]
-# avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
-#                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
-# plt.plot(avg_Delta_Theta_x_fit_NaNzero, "-", label="fit NaN zero")
-line_par, line_par_cov = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, method="dogbox", loss="cauchy")
-p, pc = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x)
+
 
 
 ################# SAVE FIT PLOT TO FILE
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Eff. linear fit")
+plt.figure()
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
+plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
 plt.title(r"Crystal {}, run {} — Torsion fit: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$y_{in}\ [mm]$')
 plt.ylabel(r'$theta_{x_{in}}\ [\mu rad]$')
