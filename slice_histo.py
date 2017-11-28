@@ -117,8 +117,14 @@ x_slices = events.groupby("BINNED_Tracks_d0_x") # TODO scoprire come funzionano 
 # then these results are proposed to the user, that can decide now to use them or not.
 
 # Find the edges in the intensity (square of the derivative)
-peak_index = signal.find_peaks_cwt(np.diff(x_slices["Delta_Theta_x"]
-             .apply(lambda x: robust_standard_deviation(x,10,90)).values)**2,
+
+
+std_slices = x_slices["Delta_Theta_x"].apply(lambda x: robust_standard_deviation(x,10,90)).values
+
+x_for_derivative = x_bin_borders[1:-1]
+std_slices_derivative_intensity = np.diff(std_slices)**2
+
+peak_index = signal.find_peaks_cwt(np.diff(x_slices["Delta_Theta_x"].apply(lambda x: robust_standard_deviation(x,10,90)).values)**2,
                                    [0.09])
                                   # 0.09 peak width because the peaks are very sharp.
 # Notice that peak_index is in the diff array, which is 1 shorter that x_slices[...]
@@ -151,6 +157,7 @@ proposed_cut_right = right_edge - side_bins_to_cut * x_bin_width
 
 
 ################ PLOT HISTOGRAM
+plt.figure()
 plt.hist2d(events.loc[:,'Tracks_d0_x'].values, 1e6*(events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values),\
 bins=numbin, norm=LogNorm(), range=[histo_range_x,histo_range_y])
 plt.axvline(x=proposed_cut_left, linestyle="dashed", color='Crimson', label="")
@@ -164,6 +171,35 @@ plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 plt.colorbar()
 plt.tight_layout()
 plt.savefig("latex/img/geocuts.pdf")
+plt.show()
+#################
+
+################ PLOT SLICE STANDARD DEVIATION
+plt.figure()
+plt.plot(x_bin_centers,std_slices)
+
+plt.title(r"Crystal {}, run {} - Robust standard deviation in slice".format(crystal_name, run_number))
+plt.xlabel(r'$x_{in}\ [mm]$')
+plt.ylabel('Standard deviation (5% - 95%)')
+# print(events)
+plt.tight_layout()
+plt.savefig("latex/img/std_per_slice.pdf")
+plt.show()
+#################
+
+################ PLOT SLICE STANDARD DEVIATION DERIVATIVE INTENSITY
+plt.figure()
+left_edge_intensity = crystal_edge_locations.iloc[0]["intensity"]  # [mm]
+right_edge_intensity = crystal_edge_locations.iloc[1]["intensity"] # [mm]
+plt.plot(x_for_derivative,std_slices_derivative_intensity)
+plt.plot([left_edge,right_edge],[left_edge_intensity,right_edge_intensity],"v")
+
+plt.title(r"Crystal {}, run {} - Derivative squared of std: {}".format(crystal_name, run_number, r"$\left(\frac{d\sigma(x_{in})}{dx_{in}}\right)^2$"))
+plt.xlabel(r'$x_{in}\ [mm]$')
+plt.ylabel(r"$\left(\frac{d\sigma(x_{in})}{dx_{in}}\right)^2$")
+# print(events)
+plt.tight_layout()
+plt.savefig("latex/img/std_derivative_squared.pdf")
 plt.show()
 #################
 
