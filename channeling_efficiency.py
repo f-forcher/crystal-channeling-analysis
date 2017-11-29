@@ -121,12 +121,13 @@ def fit_channeling(input_df):
 
     print(popt)
 
-    plt.figure()
-    plt.plot(histo_bin_centers,data_histo[0],".")
-    plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*popt))
-    plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*initial_guess))
-
-    plt.show()
+    # # Plot the chi2 fit, for debug purposes
+    # plt.figure()
+    # plt.plot(histo_bin_centers,data_histo[0],".")
+    # plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*popt))
+    # plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*initial_guess))
+    #
+    # plt.show()
 
     perr = np.sqrt(np.diag(pcov))
     # Should be in same order as in p0 of curve_fit
@@ -145,8 +146,9 @@ def fit_channeling(input_df):
 ################# MAIN
 file_name = sys.argv[1]
 crystal_name = sys.argv[2]
-particle_energy_input = sys.argv[3] # [GeV]
-run_number = sys.argv[4]
+run_number = sys.argv[3]
+particle_name = sys.argv[4]
+particle_energy_input = sys.argv[5] # [GeV]
 
 # Probably read by chunk not needed by now.
 events = pd.read_hdf(file_name)
@@ -244,8 +246,9 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     plt.plot(x_histo, gauss_CH, label="Channeling Peak", color='Orange')
     thetac_title = r"$\theta_c/2$" if i == 0 else r"$\theta_c$"
     cut_value = theta_c/2 if i == 0 else theta_c
-    plt.suptitle(r"Crystal {}, run {} — Channeling, cut ± {} = ±{:.3}".format(crystal_name, run_number,thetac_title, cut_value),fontweight='bold')
-    plt.title(r"Efficiency {:.3}% — Bending Angle {:.3} {}".format(fit_results["weight_CH"]*100, fit_results["mean_CH"],r"$[\mu rad]$"))
+    plt.suptitle(r"{} run {}, {} {} GeV — Channeling, cut ± {} = ±{:.3}".format(crystal_name,run_number,particle_name,particle_energy_input,thetac_title,cut_value),fontweight='bold')
+    plt.title(r"Efficiency {:.3}% ± {:.1}% — Bending Angle {:.3} ± {:.1} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
+                                                                                    fit_results["mean_CH"],fit_results["mean_CH_err"],r"$[\mu rad]$"))
     plt.xlabel(r'$\Delta \theta_{x}\ [\mu rad]$')
     plt.ylabel('Frequency')
     plt.legend()

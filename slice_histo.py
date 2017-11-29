@@ -45,6 +45,9 @@ plt.ion()
 file_name = sys.argv[1]
 crystal_name = sys.argv[2]
 run_number = sys.argv[3]
+particle_name = sys.argv[4]
+particle_energy = sys.argv[5]
+
 
 # Check if the run number is in the actual data file name, otherwise print a
 # warning
@@ -163,13 +166,13 @@ bins=numbin, norm=LogNorm(), range=[histo_range_x,histo_range_y])
 plt.axvline(x=proposed_cut_left, linestyle="dashed", color='Crimson', label="")
 plt.axvline(x=proposed_cut_right, linestyle="dashed", color='Crimson', label="")
 
-
-plt.title(r"Crystal {}, run {} - Histogram: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
+plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
+plt.title(r"Histogram: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$x_{in}\ [mm]$')
 plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 # print(events)
 plt.colorbar()
-plt.tight_layout()
+#plt.tight_layout()
 plt.savefig("latex/img/geocuts.pdf")
 plt.show()
 #################

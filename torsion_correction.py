@@ -123,7 +123,8 @@ def fit_and_get_efficiency(input_groupby_obj):
 file_name = sys.argv[1]
 crystal_name = sys.argv[2]
 run_number = sys.argv[3]
-
+particle_name = sys.argv[4]
+particle_energy = sys.argv[5]
 
 
 if os.path.isfile('crystal_analysis_parameters.csv'):
@@ -187,56 +188,6 @@ thetain_x_nbins = 60
 gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
 #                        (-2,2),(-30e-5,30e-5),17*4,12*4)
                         (-2,2), (-30,30), d0y_nbins, thetain_x_nbins)
-# efficiency_histo = {}
-# clf = mixture.GaussianMixture(
-#     n_components=2,
-#     covariance_type='full',
-#     verbose=2,
-#     verbose_interval=10,
-#     random_state=random.SystemRandom().randrange(0, 4095),
-# #    means_init=[[-17], [0]],
-#     #                              weights_init=[1 / 2, 1 / 2],
-#     init_params="kmeans",
-#     tol=1e-6,
-#     max_iter=1000)
-# for index1, index2, gruppo in gruppi:
-#     print("\n",index)
-#     # This reshape transforms (an np.array) [1,2,3] into [ [1], [2], [3] ]
-#     # Scikit wants a list of datapoints, here the datapoints coordinate are 1D, hence each one is a single-element list (of features/coordinates)
-#     data = (gruppo.loc[:,"Tracks_thetaOut_x"].values - \
-#             gruppo.loc[:,"Tracks_thetaIn_x"].values).reshape(-1, 1)
-#     print(data[:10])
-#     print("Tot size: ", data.size)
-#
-#     efficiency = 0
-#     if data.size < 10:
-#         continue
-#     else:
-#         clf.fit(data)
-#
-#         r_m1, r_m2 = clf.means_
-#         w1, w2 = clf.weights_
-#         m1, m2 = r_m1[0], r_m2[0]
-#
-#         # Save the weights in the right array
-#         # Lower delta_thetax is the AM peak, higher CH
-#         if (m1 < m2):
-#             weights_AM = w1
-#             weights_CH = w2
-#             means_AM = m1
-#             means_CH = m2
-#         else:
-#             weights_AM = w2
-#             weights_CH = w1
-#             means_AM = m2
-#             means_CH = m1
-#         efficiency = weights_CH
-#
-#     efficiency_histo[index] = efficiency
-#     print("efficiency: ", efficiency)
-
-# data = (gruppo.loc[:,"Tracks_thetaOut_x"].values - \
-#         gruppo.loc[:,"Tracks_thetaIn_x"].values).reshape(-1, 1)
 
 efficiencies = gruppi["Delta_Theta_x"].aggregate(fit_and_get_efficiency)
 
@@ -264,7 +215,8 @@ plt.figure()
 grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
 plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
            bins=[d0y_nbins, thetain_x_nbins]) # TODO
-plt.title(r"Crystal {}, run {} - Efficiency as function of {}".format(crystal_name, run_number, r"$x_{in}$ and $\Delta \theta_{x}$"))
+plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
+plt.title(r"Efficiency as function of {}".format(r"$x_{in}$ and $\Delta \theta_{x}$"))
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
@@ -272,7 +224,7 @@ plt.xlabel(r'$y_{in}\ [mm]$')
 plt.ylabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 # print(events)
 plt.colorbar()
-plt.tight_layout()
+#plt.tight_layout()
 plt.savefig("latex/img/efficiency_histo.pdf")
 plt.show()
 
@@ -284,10 +236,11 @@ plt.figure()
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
-plt.title(r"Crystal {}, run {} — Torsion fit: {}".format(crystal_name, run_number, r"$y_{in}$ vs $\Delta \theta_{x}$"))
+plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
+plt.title(r"Torsion fit: {}".format(r"$y_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$y_{in}\ [mm]$')
 plt.ylabel(r'$\theta_{x_{in}}\ [\mu rad]$')
-plt.tight_layout()
+#plt.tight_layout()
 plt.legend()
 plt.savefig("latex/img/torsion_fit.pdf")
 plt.show()
@@ -316,12 +269,13 @@ events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
 plt.figure()
 plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
 bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
-plt.title(r"Crystal {}, run {} — Histogram: {}".format(crystal_name, run_number, r"$y_{in}$ vs $\Delta \theta_{x}$"))
+plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
+plt.title(r"Histogram: {}".format(r"$y_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 # print(events)
 plt.colorbar()
-plt.tight_layout()
+#plt.tight_layout()
 plt.savefig("latex/img/corrected_histo.pdf")
 plt.show()
 #################
