@@ -19,10 +19,21 @@ import math
 # from bin_dataframe import bin2D_dataframe
 import mie_utils as my
 
+# def gaussian(x, mu, sig):
+#     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+def gaussian(x, mu, sig, c1):
+    return c1*matplotlib.mlab.normpdf(x, mu1, sig1)
+
+
+def gaussian_sum(x, c1, mu1, sig1, mu2, sig2):
+    return c1*matplotlib.mlab.normpdf(x, mu1, sig1) + \
+           (1-c1)*matplotlib.mlab.normpdf(x, mu2, sig2)
+
+
 def fit_channeling(input_df):
     """
     Fit the histogram for two gaussian peaks (CH for channeling and AM for
-    amorphous), then return the fit ibject for further processing.
+    amorphous), then return the fit object for further processing.
 
     data: input dataset.
 
@@ -94,11 +105,38 @@ def fit_channeling(input_df):
         fit_results["sigma_CH"] = c2
     else:
         fit_results["weight_AM"] = w2
-        fit_results["weight_CH" ]= w1
+        fit_results["weight_CH"]= w1
         fit_results["mean_AM"] = m2
         fit_results["mean_CH"] = m1
         fit_results["sigma_AM"] = c2
         fit_results["sigma_CH"] = c1
+
+    # Calculate errors plugging the found parameters in a chi2 fit.
+    data_histo = np.histogram(data,bins=200,normed=True)
+    histo_bin_centers = (data_histo[1] + (data_histo[1][1] - data_histo[1][0])/2)[:-1]
+    initial_guess = [fit_results["weight_AM"], fit_results["mean_AM"], fit_results["sigma_AM"],
+        fit_results["mean_CH"], fit_results["sigma_CH"]]
+    popt, pcov = curve_fit(gaussian_sum, histo_bin_centers, data_histo[0],
+                            p0=initial_guess)
+
+    print(popt)
+
+    plt.figure()
+    plt.plot(histo_bin_centers,data_histo[0],".")
+    plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*popt))
+    plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*initial_guess))
+
+    plt.show()
+
+    perr = np.sqrt(np.diag(pcov))
+    # Should be in same order as in p0 of curve_fit
+    fit_results["weight_AM_err"] = perr[0]
+    fit_results["weight_CH_err"] = perr[0] # c2=1-c1, by propagation same error
+    fit_results["mean_AM_err"]   = perr[1]
+    fit_results["sigma_AM_err"]  = perr[2]
+    fit_results["mean_CH_err"]   = perr[3]
+    fit_results["sigma_CH_err"]  = perr[4]
+
 
     return fit_results,data
 
@@ -221,5 +259,9 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
 
     print("\nCut: +-",low_cut)
     print(pd.Series(fit_results))
+
+    # my.save_parameters_in_csv("crystal_analysis_parameters.csv",**fit_results)
+
+
     i=i+1
 #################

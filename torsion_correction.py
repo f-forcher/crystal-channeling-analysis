@@ -1,6 +1,7 @@
 # SYSTEM LIBS
 from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt; plt.ion();
+import matplotlib
 import numpy as np
 import pandas as pd
 # from root_pandas import read_root
@@ -21,8 +22,8 @@ import mie_utils as my
 
 ######################################
 ################# FUNCTIONS
-def gaussian(x, mu, sig):
-    return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+def gaussian(x, mu, sig, c):
+    return c*matplotlib.mlab.normpdf(x, mu, sig)
 
 def line(x, m, q):
     return m*x + q
@@ -268,7 +269,7 @@ plt.title(r"Crystal {}, run {} - Efficiency as function of {}".format(crystal_na
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
 plt.xlabel(r'$y_{in}\ [mm]$')
-plt.ylabel(r'$theta_{x_{in}}\ [\mu rad]$')
+plt.ylabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 # print(events)
 plt.colorbar()
 plt.tight_layout()
@@ -283,9 +284,9 @@ plt.figure()
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
 plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
-plt.title(r"Crystal {}, run {} — Torsion fit: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
+plt.title(r"Crystal {}, run {} — Torsion fit: {}".format(crystal_name, run_number, r"$y_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$y_{in}\ [mm]$')
-plt.ylabel(r'$theta_{x_{in}}\ [\mu rad]$')
+plt.ylabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 plt.tight_layout()
 plt.legend()
 plt.savefig("latex/img/torsion_fit.pdf")
@@ -315,7 +316,7 @@ events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
 plt.figure()
 plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
 bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
-plt.title(r"Crystal {}, run {} — Histogram: {}".format(crystal_name, run_number, r"$x_{in}$ vs $\Delta \theta_{x}$"))
+plt.title(r"Crystal {}, run {} — Histogram: {}".format(crystal_name, run_number, r"$y_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 # print(events)
