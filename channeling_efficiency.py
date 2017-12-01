@@ -247,7 +247,7 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     thetac_title = r"$\theta_c/2$" if i == 0 else r"$\theta_c$"
     cut_value = theta_c/2 if i == 0 else theta_c
     plt.suptitle(r"{} run {}, {} {} GeV — Channeling, cut ± {} = ±{:.3}".format(crystal_name,run_number,particle_name,particle_energy_input,thetac_title,cut_value),fontweight='bold')
-    plt.title(r"Efficiency {:.3}% ± {:.1}% — Bending Angle {:.3} ± {:.1} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
+    plt.title(r"Efficiency {:.3}% ± {:.1}% — Bending Angle {:.4} ± {:.1} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
                                                                                     fit_results["mean_CH"],fit_results["mean_CH_err"],r"$[\mu rad]$"))
     plt.xlabel(r'$\Delta \theta_{x}\ [\mu rad]$')
     plt.ylabel('Frequency')
