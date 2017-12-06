@@ -8,6 +8,7 @@ from scipy import signal # To find peaks, for edge-detecting the crystal
 import os
 
 import editable_input as ei # My script for editable text input
+import mie_utils as my
 
 """
 Script #2
@@ -16,7 +17,25 @@ Plot x vs delta_theta_x to select a geometric cut for the crystal.
 cli argument 1: the name of the .root.hdf file
 """
 
-def robust_standard_deviation(x, lowest_percentage, highest_percentage):
+################# GET CLI ARGUMENTS AND FIND THE CORRESPONDING CONF FILE
+# Use a run specific params file, otherwise look for a crystal specific one,
+# otherwise use the general one.
+plt.ion()
+file_name = sys.argv[1]
+crystal_name = sys.argv[2]
+run_number = sys.argv[3]
+particle_name = sys.argv[4]
+particle_energy = sys.argv[5]
+if os.path.isfile(run_number + '_analysis_configuration_params.csv'):
+    analysis_configuration_params_file = run_number + '_analysis_configuration_params.csv'
+elif os.path.isfile(crystal_name + '_analysis_configuration_params.csv.csv'):
+    analysis_configuration_params_file = crystal_name + '_analysis_configuration_params.csv'
+else:
+    analysis_configuration_params_file = 'analysis_configuration_params.csv'
+print("[LOG]: Reading crystal analysis parameters from ", analysis_configuration_params_file)
+
+
+def robust_standard_deviation(x, lowest_percentage, highest_percentage, low_data_threshold):
     """
     Calculate the standard deviation on x using only the data contained
     in the percentiles between lower_perc and upper_perc.
@@ -27,7 +46,7 @@ def robust_standard_deviation(x, lowest_percentage, highest_percentage):
     return: robust standard deviation (scalar)
     """
 
-    if len(x) < 5:
+    if len(x) < low_data_threshold:
         print("[LOG]: too few data in slice, std set to zero")
         return 0
 
@@ -89,10 +108,17 @@ print("[LOG]: Loaded data!")
 
 events["Delta_Theta_x"] = events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values
 
-histo_range_x = [-5,5] # [mm]
-histo_range_y = [-100,100] # [murad]
-numbin = 400
 
+
+histo_range_x_low, histo_range_x_high = my.get_parameters_from_csv(analysis_configuration_params_file,
+                                        "geocut_histo_range_x_low", "geocut_histo_range_x_high")
+histo_range_y_low, histo_range_y_high = my.get_parameters_from_csv(analysis_configuration_params_file,
+                                        "geocut_histo_range_y_low", "geocut_histo_range_y_high")
+geocut_numberofbin_per_axis = my.get_parameters_from_csv(analysis_configuration_params_file,
+                                        "geocut_numberofbin_per_axis")
+histo_range_x = [histo_range_x_low, histo_range_x_high] # [mm]
+histo_range_y = [histo_range_y_low, histo_range_y_high] # [murad]
+numbin = geocut_numberofbin_per_axis
 
 ################# BIN THE DATA
 # num=numbin+1 because we want numbin bins and so we need num = numbin + 1 bin "borders", see test_bins.py for examples
@@ -122,12 +148,15 @@ x_slices = events.groupby("BINNED_Tracks_d0_x") # TODO scoprire come funzionano 
 # Find the edges in the intensity (square of the derivative)
 
 
-std_slices = x_slices["Delta_Theta_x"].apply(lambda x: robust_standard_deviation(x,10,90)).values
+low_percentage, high_percentage, low_data_threshold = my.get_parameters_from_csv(analysis_configuration_params_file,
+                                        "geocut_std_low_percentage", "geocut_std_high_percentage", "geocut_std_low_data_threshold")
+robust_std = lambda x: robust_standard_deviation(x,low_percentage,high_percentage,low_data_threshold)
+std_slices = x_slices["Delta_Theta_x"].apply(robust_std).values
 
 x_for_derivative = x_bin_borders[1:-1]
 std_slices_derivative_intensity = np.diff(std_slices)**2
 
-peak_index = signal.find_peaks_cwt(np.diff(x_slices["Delta_Theta_x"].apply(lambda x: robust_standard_deviation(x,10,90)).values)**2,
+peak_index = signal.find_peaks_cwt(np.diff(x_slices["Delta_Theta_x"].apply(robust_std).values)**2,
                                    [0.09])
                                   # 0.09 peak width because the peaks are very sharp.
 # Notice that peak_index is in the diff array, which is 1 shorter that x_slices[...]
@@ -138,7 +167,7 @@ peak_index = signal.find_peaks_cwt(np.diff(x_slices["Delta_Theta_x"].apply(lambd
 #                       .std().values)**2)[peak_index]}) # We dont need +1 here
 peaks = pd.DataFrame({'x': x_bin_centers[peak_index + 1], # +1: see above
                       'intensity': (np.diff(x_slices["Delta_Theta_x"]
-                      .apply(lambda x: robust_standard_deviation(x,10,90))
+                      .apply(robust_std)
                       .values)**2)[peak_index]}) # We dont need +1 here
 
 
@@ -223,18 +252,20 @@ cut_right = float(ei.edit_input("xmax = ", round(proposed_cut_right,4)))
 
 # parameters_table = pd.DataFrame({'parameter_name': ['xmin', 'xmax'],
 #                                  'value': [proposed_cut_left, proposed_cut_right]})
-if os.path.isfile('crystal_analysis_parameters.csv'):
-    # read up the already existing parameters (like init_scan)
-    parameters_table = pd.read_csv("crystal_analysis_parameters.csv", sep="\t", index_col=0)
-else: #
-    raise FileNotFoundError("[ERROR]: File crystal_analysis_parameters.csv not "
-                            "found. Create it with save_as_hdf.py")
-
-parameters_table.loc['xmin'] = cut_left
-parameters_table.loc['xmax'] = cut_right
-
-
-
-parameters_table.to_csv("crystal_analysis_parameters.csv",sep='\t')
-
+# if os.path.isfile('crystal_analysis_parameters.csv'):
+#     # read up the already existing parameters (like init_scan)
+#     parameters_table = pd.read_csv("crystal_analysis_parameters.csv", sep="\t", index_col=0)
+# else: #
+#     raise FileNotFoundError("[ERROR]: File crystal_analysis_parameters.csv not "
+#                             "found. Create it with save_as_hdf.py")
+#
+# parameters_table.loc['xmin'] = cut_left
+# parameters_table.loc['xmax'] = cut_right
+#
+#
+#
+# parameters_table.to_csv("crystal_analysis_parameters.csv",sep='\t')
+my.save_parameters_in_csv("crystal_analysis_parameters.csv",
+                            xmin=cut_left,
+                            xmax=cut_right)
 #################

@@ -1,8 +1,4 @@
-parameter_name	value
-init_scan	1570674.0
-xmin	0.0
-xmax	0.5
-torsion_m	1.4520199473728592
-torsion_m_err	0.05783049657965345
-torsion_q	-5.2648967868516126
-torsion_q_err	0.06690180774484163
+parameter_name:value
+init_scan:0.0
+xmax:0.4
+xmin:0.1

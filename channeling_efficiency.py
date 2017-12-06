@@ -149,8 +149,14 @@ crystal_name = sys.argv[2]
 run_number = sys.argv[3]
 particle_name = sys.argv[4]
 particle_energy_input = sys.argv[5] # [GeV]
+# Check if the run number is in the actual data file name, otherwise print a
+# warning
+if '_'+run_number+'_' not in file_name:
+    print("[WARNING]: '_{}_' not found in file name '{}', maybe check if "
+          "correct run number or correct file.".format(run_number, file_name))
 
-# Probably read by chunk not needed by now.
+
+# Read by chunk not needed by now probably.
 events = pd.read_hdf(file_name)
 
 # Angles in microradians from torsion_correction.py lines 171-174

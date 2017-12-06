@@ -111,6 +111,30 @@ def fit_and_get_efficiency(input_groupby_obj):
 ################# MAIN
 
 ################# READ THE PARAMETERS
+
+
+file_name = sys.argv[1]
+crystal_name = sys.argv[2]
+run_number = sys.argv[3]
+particle_name = sys.argv[4]
+particle_energy = sys.argv[5]
+# Check if the run number is in the actual data file name, otherwise print a
+# warning
+if '_'+run_number+'_' not in file_name:
+    print("[WARNING]: '_{}_' not found in file name '{}', maybe check if "
+          "correct run number or correct file.".format(run_number, file_name))
+
+
+# if os.path.isfile('crystal_analysis_parameters.csv'):
+#     parameters_table = pd.read_csv("crystal_analysis_parameters.csv", sep="\t", index_col=0)
+# else: #
+#     raise FileNotFoundError("[ERROR]: File crystal_analysis_parameters.csv not "
+#                             "found. Create it with save_as_hdf.py")
+#
+# cut_left = float(parameters_table.loc['xmin'])
+# cut_right = float(parameters_table.loc['xmax'])
+# init_scan = float(parameters_table.loc['init_scan'])
+
 # Read the parameters from the .csv
 # .csv example:
 #
@@ -118,24 +142,14 @@ def fit_and_get_efficiency(input_groupby_obj):
 # init_scan	1570674.0
 # xmin	0.0
 # xmax	0.475
+
+# if os.path.isfile(crystal_name + '_crystal_analysis_parameters.csv'):
 #
-
-file_name = sys.argv[1]
-crystal_name = sys.argv[2]
-run_number = sys.argv[3]
-particle_name = sys.argv[4]
-particle_energy = sys.argv[5]
-
-
-if os.path.isfile('crystal_analysis_parameters.csv'):
-    parameters_table = pd.read_csv("crystal_analysis_parameters.csv", sep="\t", index_col=0)
-else: #
-    raise FileNotFoundError("[ERROR]: File crystal_analysis_parameters.csv not "
-                            "found. Create it with save_as_hdf.py")
-
-cut_left = float(parameters_table.loc['xmin'])
-cut_right = float(parameters_table.loc['xmax'])
-init_scan = float(parameters_table.loc['init_scan'])
+#     crystal_analysis_parameters_file = crystal_name + '_crystal_analysis_parameters.csv'
+# else if os.path.isfile(run_number + '_crystal_analysis_parameters.csv'):
+#     crystal_analysis_parameters_file = run_number + '_crystal_analysis_parameters.csv'
+# print("[LOG]: Reading crystal analysis parameters from ", crystal_analysis_parameters_file)
+cut_left, cut_right = my.get_parameters_from_csv(crystal_analysis_parameters_file, "cut_left", "cut_right")
 #################
 
 

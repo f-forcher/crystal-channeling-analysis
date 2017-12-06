@@ -93,9 +93,10 @@ def get_parameters_from_csv(csv_file, *args):
     if os.path.isfile(csv_file):
         # read up the parameters (like init_scan)
         parameters_table = pd.read_csv(csv_file,
-                           sep="\t", index_col=0, comment="#")
+                           delimiter=":", index_col=0, comment="#",
+                           skipinitialspace=True)
     else: #
-        raise FileNotFoundError("[ERROR]: parameter .csv file not found. "
+        raise FileNotFoundError("[ERROR]: parameter file'"+ csv_file +"''  not found. "
                                 "Create it with save_as_hdf.py")
     values = list()
     for p in args:
@@ -125,7 +126,7 @@ def save_parameters_in_csv(csv_file, **kwargs):
     xmax	0.475
 
     Example use:
-    >>> a0, b1, c2 = get_parameters_from_csv("conf/file.csv",a0=1,b1=-1,c2=1e10)
+    >>> save_parameters_in_csv("conf/file.csv",a0=1,b1=-1,c2=1e10)
 
     csv_file: file name of the csv.
 
@@ -138,7 +139,8 @@ def save_parameters_in_csv(csv_file, **kwargs):
     if os.path.isfile(csv_file):
         # read up the already existing parameters (like init_scan)
         parameters_table = pd.read_csv(csv_file,
-                                       sep="\t", index_col=0, comment="#")
+                           sep=":", index_col=0, comment="#",
+                           skipinitialspace=True)
     else:
         parameters_table = pd.DataFrame({"parameter_name": [],
                                         "value": []})
@@ -151,4 +153,4 @@ def save_parameters_in_csv(csv_file, **kwargs):
 
         parameters_table.loc[var_name] = value
 
-    parameters_table.to_csv(csv_file,sep='\t')
+    parameters_table.to_csv(csv_file,sep=':')

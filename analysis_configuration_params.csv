@@ -1,0 +1,35 @@
+# File in which the algorithm's parameters, rather than the crystal ones
+# are stored. For example things like number of bins or thresholds.
+#
+# Comments are made by the '#' character, even at the end of a line.
+# Blank lines are skipped
+# The table has the format:
+#   parameter_name:[any spaces]value
+#
+# It's good pratice to write the dimensional units in a inline comment, if any.
+
+
+############ Column headers
+parameter_name:value
+####################################
+
+
+
+############ GEOMETRICAL CUTS: geometric_cuts.py parameters
+#### 2D Histogram plot parameters
+geocut_histo_range_x_low:  -5   # [mm]
+geocut_histo_range_x_high:  5   # [mm]
+geocut_histo_range_y_low:  -100 # [murad]
+geocut_histo_range_y_high:  100 # [murad]
+geocut_numberofbin_per_axis:  400
+
+
+#### Robust standard deviation filter parameters
+# Retain the data between these percentiles.
+geocut_std_low_percentage: 10      # [%]
+geocut_std_high_percentage: 90     # [%]
+
+# If data content of vertical slice is lower than this number, set the slice std
+# to 0
+geocut_std_low_data_threshold: 5
+####################################

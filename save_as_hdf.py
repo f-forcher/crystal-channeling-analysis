@@ -38,9 +38,15 @@ for df in evts:
 
 
 # TODO Commentare qua sta roba convoluta
-parameters_table = pd.DataFrame({"parameter_name": ["init_scan"], "value": [init_scan]})
-parameters_table.set_index("parameter_name",inplace=True)
+# parameters_table = pd.DataFrame({"parameter_name": ["init_scan"], "value": [init_scan]})
+# parameters_table.set_index("parameter_name",inplace=True)
+#
+# parameters_table.to_csv("crystal_analysis_parameters.csv",sep='\t')
 
-parameters_table.to_csv("crystal_analysis_parameters.csv",sep='\t')
-
+my.save_parameters_in_csv("crystal_analysis_parameters.csv",
+                           root_file_name=file_name,
+                           crystal_name=crystal_name,
+                           run_number=run_number,
+                           particle_name=particle_name,
+                           particle_energy=particle_energy)
 print "Finished creating HDF file"
