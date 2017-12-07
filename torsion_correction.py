@@ -28,11 +28,14 @@ def gaussian(x, mu, sig, c):
 def line(x, m, q):
     return m*x + q
 
-def fit_and_get_efficiency(input_groupby_obj):
+def fit_and_get_efficiency(input_data, lowest_percentage,
+                           highest_percentage, low_data_threshold,
+                           AM_means_init, CH_means_init, AM_sigma_init,
+                           CH_sigma_init,fit_tolerance,max_iterations):
     """
     Function to be applied on a groupby to get channeling efficiency.
 
-    data: input dataset.
+    input_data: input dataset.
 
     return: channeling efficiency (0 < efficiency < 1), basically
             channeling peak weight.
@@ -43,29 +46,29 @@ def fit_and_get_efficiency(input_groupby_obj):
         verbose=0,
         verbose_interval=10,
         random_state=random.SystemRandom().randrange(0,2147483647), # 2**31-1
-        means_init=[[0], [50]],
+        means_init=[[AM_means_init], [CH_means_init]],
     #        weights_init=[1 / 2, 1 / 2],
         init_params="kmeans",
         n_init = 2,
-        tol=1e-6,
-        precisions_init = [[[1/16]],[[1/16]]],
+        tol=fit_tolerance, # Typical 1e-6
+        precisions_init = [[[1/AM_sigma_init**2]],[[1/CH_sigma_init**2]]], # [murad^-2] 23 15
         #warm_start=True,
-        max_iter=200)
+        max_iter=max_iterations) # Typical 200
 
     ################# GET THE DATA FROM THE DATAFRAME
-    lowest_percentage = 5
-    highest_percentage = 95
-    first_percentile = np.percentile(input_groupby_obj, lowest_percentage)
-    last_percentile = np.percentile(input_groupby_obj, highest_percentage)
-    data_reduced = input_groupby_obj.values[(input_groupby_obj.values>=first_percentile) & (input_groupby_obj.values<=last_percentile)]
+    # lowest_percentage = 5
+    # highest_percentage = 95
+    first_percentile = np.percentile(input_data, lowest_percentage)
+    last_percentile = np.percentile(input_data, highest_percentage)
+    data_reduced = input_data.values[(input_data.values>=first_percentile) & (input_data.values<=last_percentile)]
     data = data_reduced.reshape(-1, 1)
 
-    #data = input_groupby_obj.reshape(-1, 1)
+    #data = input_data.reshape(-1, 1)
 
     ################# FIT THE DATA
     # Check that we have enough data for a fit, otherwise just return eff=0
     efficiency = np.NaN
-    if data.size > 50:
+    if data.size > low_data_threshold:
         clf.fit(data)
 
         if not clf.converged_:
@@ -110,20 +113,29 @@ def fit_and_get_efficiency(input_groupby_obj):
 ######################################
 ################# MAIN
 
-################# READ THE PARAMETERS
-
-
+################# GET CLI ARGUMENTS AND FIND THE CORRESPONDING CONF FILE
 file_name = sys.argv[1]
 crystal_name = sys.argv[2]
 run_number = sys.argv[3]
 particle_name = sys.argv[4]
 particle_energy = sys.argv[5]
+
+# Use a run specific params file, otherwise look for a crystal specific one,
+# otherwise use the general one.
+if os.path.isfile(run_number + '_analysis_configuration_params.csv'):
+    analysis_configuration_params_file = run_number + '_analysis_configuration_params.csv'
+elif os.path.isfile(crystal_name + '_analysis_configuration_params.csv.csv'):
+    analysis_configuration_params_file = crystal_name + '_analysis_configuration_params.csv'
+else:
+    analysis_configuration_params_file = 'analysis_configuration_params.csv'
+print("[LOG]: Reading crystal analysis parameters from ", analysis_configuration_params_file)
+
 # Check if the run number is in the actual data file name, otherwise print a
 # warning
 if '_'+run_number+'_' not in file_name:
     print("[WARNING]: '_{}_' not found in file name '{}', maybe check if "
           "correct run number or correct file.".format(run_number, file_name))
-
+#################
 
 # if os.path.isfile('crystal_analysis_parameters.csv'):
 #     parameters_table = pd.read_csv("crystal_analysis_parameters.csv", sep="\t", index_col=0)
@@ -149,7 +161,8 @@ if '_'+run_number+'_' not in file_name:
 # else if os.path.isfile(run_number + '_crystal_analysis_parameters.csv'):
 #     crystal_analysis_parameters_file = run_number + '_crystal_analysis_parameters.csv'
 # print("[LOG]: Reading crystal analysis parameters from ", crystal_analysis_parameters_file)
-cut_left, cut_right = my.get_parameters_from_csv(crystal_analysis_parameters_file, "cut_left", "cut_right")
+cut_left, cut_right = my.get_from_csv(crystal_analysis_parameters_file, "cut_left", "cut_right")
+cut_y_low, cut_y_high = my.get_from_csv(analysis_configuration_params_file, "cut_y_low", "cut_y_high")
 #################
 
 
@@ -172,7 +185,9 @@ chunksize = 2000000
 interesting_columns = ["Tracks_d0_y", "Tracks_thetaOut_x", "Tracks_thetaIn_x"]
 # Important to remember that the columns need to be indexed with
 # data_columns=[...] when .hdf is created, to be able to use "where" on them
-cuts_and_selections = ["SingleTrack == 1", "Tracks_d0_x > cut_left", "Tracks_d0_x < cut_right"]
+cuts_and_selections = ["SingleTrack == 1", "Tracks_d0_x > cut_left",
+                       "Tracks_d0_x < cut_right","Tracks_d0_y > cut_y_low",
+                       "Tracks_d0_y < cut_y_high"]
 
 evts = pd.read_hdf(file_name, chunksize = chunksize, columns=interesting_columns, where=cuts_and_selections)
 
@@ -196,14 +211,46 @@ events['Tracks_thetaOut_x'] = 1e6*events['Tracks_thetaOut_x']
 #################
 
 
-################# BIN THE DATA
-d0y_nbins  = 60
-thetain_x_nbins = 60
+################# BIN THE DATA AND CREATE EFF PLOT
+y_nbins, thetain_x_nbins = my.get_from_csv(analysis_configuration_params_file,
+                                             "torcorr_eff_y_nbins",
+                                             "torcorr_eff_thetain_x_nbins")
+eff_range_y_low, eff_range_y_high = my.get_from_csv(
+                                             analysis_configuration_params_file,
+                                             "torcorr_eff_range_y_low",
+                                             "torcorr_eff_range_y_high")
+eff_range_tx_low, eff_range_tx_high = my.get_from_csv(
+                                             analysis_configuration_params_file,
+                                             "torcorr_eff_range_tx_low",
+                                             "torcorr_eff_range_tx_high")
 gruppi = bin2D_dataframe(events, "Tracks_d0_y", "Tracks_thetaIn_x",
 #                        (-2,2),(-30e-5,30e-5),17*4,12*4)
-                        (-2,2), (-30,30), d0y_nbins, thetain_x_nbins)
+                        (eff_range_y_low,eff_range_y_high),
+                        (eff_range_tx_low,eff_range_tx_high),
+                        y_nbins, thetain_x_nbins)
 
-efficiencies = gruppi["Delta_Theta_x"].aggregate(fit_and_get_efficiency)
+lowest_percentage, highest_percentage, \
+low_data_threshold = my.get_from_csv(analysis_configuration_params_file,
+                                     "torcorr_eff_low_percentage",
+                                     "torcorr_eff_high_percentage",
+                                     "torcorr_eff_low_data_threshold")
+
+AM_means_init, CH_means_init, AM_sigma_init,
+CH_sigma_init, fit_tolerance, max_iterations = my.get_from_csv( \
+                                     analysis_configuration_params_file,
+                                     "torcorr_eff_AM_means_init",
+                                     "torcorr_eff_CH_means_init",
+                                     "torcorr_eff_AM_sigma_init",
+                                     "torcorr_eff_CH_sigma_init",
+                                     "torcorr_eff_fit_tolerance",
+                                     "torcorr_eff_max_iterations")
+
+
+robust_fit = lambda x: fit_and_get_efficiency(x, lowest_percentage,
+                           highest_percentage, low_data_threshold,
+                           AM_means_init, CH_means_init, AM_sigma_init,
+                           CH_sigma_init, fit_tolerance, max_iterations)
+efficiencies = gruppi["Delta_Theta_x"].aggregate(robust_fit)
 
 
 
@@ -228,7 +275,7 @@ p, pc = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta
 plt.figure()
 grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
 plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
-           bins=[d0y_nbins, thetain_x_nbins]) # TODO
+           bins=[y_nbins, thetain_x_nbins]) # TODO
 plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
 plt.title(r"Efficiency as function of {}".format(r"$x_{in}$ and $\Delta \theta_{x}$"))
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
@@ -269,7 +316,7 @@ print("m: {:.5} +- {:.5}\nq: {:.5} +- {:.5}".format(line_par[0], line_par_err[0]
 ################# SAVE PARAMETERS TO FILE
 tor_m = line_par[0]
 tor_q = line_par[1]
-my.save_parameters_in_csv("crystal_analysis_parameters.csv",
+my.save_in_csv("crystal_analysis_parameters.csv",
                             torsion_m=line_par[0],
                             torsion_m_err=line_par_err[0],
                             torsion_q=line_par[1],
@@ -281,8 +328,22 @@ my.save_parameters_in_csv("crystal_analysis_parameters.csv",
 events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
                               (tor_m*events["Tracks_d0_y"]+tor_q))# + init_scan
 plt.figure()
+hist_tx_nbins, hist_dtx_nbins = my.get_from_csv(analysis_configuration_params_file,
+                                             "torcorr_hist_tx_nbins",
+                                             "torcorr_hist_dtx_nbins")
+hist_range_tx_low, hist_range_tx_high = my.get_from_csv(
+                                             analysis_configuration_params_file,
+                                             "torcorr_hist_range_tx_low",
+                                             "torcorr_hist_range_tx_high")
+hist_range_dtx_low, hist_range_dtx_high = my.get_from_csv(
+                                             analysis_configuration_params_file,
+                                             "torcorr_hist_range_dtx_low",
+                                             "torcorr_hist_range_dtx_high")
 plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
-bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
+           bins=[hist_tx_nbins,hist_dtx_nbins],
+           norm=LogNorm(),
+           range=[[hist_range_tx_low, hist_range_tx_high],
+                  [hist_range_dtx_low, hist_range_dtx_high]])
 plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
 plt.title(r"Histogram: {}".format(r"$y_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$\theta_{x_{in}}\ [\mu rad]$')

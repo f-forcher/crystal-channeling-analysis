@@ -17,22 +17,6 @@ Plot x vs delta_theta_x to select a geometric cut for the crystal.
 cli argument 1: the name of the .root.hdf file
 """
 
-################# GET CLI ARGUMENTS AND FIND THE CORRESPONDING CONF FILE
-# Use a run specific params file, otherwise look for a crystal specific one,
-# otherwise use the general one.
-plt.ion()
-file_name = sys.argv[1]
-crystal_name = sys.argv[2]
-run_number = sys.argv[3]
-particle_name = sys.argv[4]
-particle_energy = sys.argv[5]
-if os.path.isfile(run_number + '_analysis_configuration_params.csv'):
-    analysis_configuration_params_file = run_number + '_analysis_configuration_params.csv'
-elif os.path.isfile(crystal_name + '_analysis_configuration_params.csv.csv'):
-    analysis_configuration_params_file = crystal_name + '_analysis_configuration_params.csv'
-else:
-    analysis_configuration_params_file = 'analysis_configuration_params.csv'
-print("[LOG]: Reading crystal analysis parameters from ", analysis_configuration_params_file)
 
 
 def robust_standard_deviation(x, lowest_percentage, highest_percentage, low_data_threshold):
@@ -59,13 +43,27 @@ def robust_standard_deviation(x, lowest_percentage, highest_percentage, low_data
     return robust_std
 
 
+######################################
+################# MAIN
 
+################# GET CLI ARGUMENTS AND FIND THE CORRESPONDING CONF FILE
+# Get CLI arguments of the scripts
 plt.ion()
 file_name = sys.argv[1]
 crystal_name = sys.argv[2]
 run_number = sys.argv[3]
 particle_name = sys.argv[4]
-particle_energy = sys.argv[5]
+particle_energy = sys.argv[5] # [GeV]
+
+# Use a run specific params file, otherwise look for a crystal specific one,
+# otherwise use the general one.
+if os.path.isfile(run_number + '_analysis_configuration_params.csv'):
+    analysis_configuration_params_file = run_number + '_analysis_configuration_params.csv'
+elif os.path.isfile(crystal_name + '_analysis_configuration_params.csv.csv'):
+    analysis_configuration_params_file = crystal_name + '_analysis_configuration_params.csv'
+else:
+    analysis_configuration_params_file = 'analysis_configuration_params.csv'
+print("[LOG]: Reading crystal analysis parameters from ", analysis_configuration_params_file)
 
 
 # Check if the run number is in the actual data file name, otherwise print a
@@ -73,6 +71,7 @@ particle_energy = sys.argv[5]
 if '_'+run_number+'_' not in file_name:
     print("[WARNING]: '_{}_' not found in file name '{}', maybe check if "
           "correct run number or correct file.".format(run_number, file_name))
+#################
 
 # LOAD DATAFRAME FROM HDF FILE
 # DATAFRAME COLUMNS:
@@ -89,7 +88,11 @@ if '_'+run_number+'_' not in file_name:
 #        'Tracks_chi2_y', 'SingleTrack', 'MultiHit'
 chunksize = 2000000
 interesting_columns = ["Tracks_d0_x", "Tracks_thetaOut_x", "Tracks_thetaIn_x", "SingleTrack"]
-evts = pd.read_hdf(file_name, chunksize = chunksize, columns=interesting_columns, where=["SingleTrack == 1"])#,"Tracks_d0_y>-1","Tracks_d0_y < 1"])TODO test peaks
+cut_y_low, cut_y_high = my.get_from_csv(analysis_configuration_params_file,
+                                        "geocut_cut_y_low", "geocut_cut_y_high")
+evts = pd.read_hdf(file_name, chunksize = chunksize, columns=interesting_columns,
+                   where=["SingleTrack == 1", "Tracks_d0_y > cut_y_low",
+                          "Tracks_d0_y < cut_y_high"])
 
 
 # events = evts.next() # python 2!
@@ -110,14 +113,14 @@ events["Delta_Theta_x"] = events.loc[:,'Tracks_thetaOut_x'].values - events.loc[
 
 
 
-histo_range_x_low, histo_range_x_high = my.get_parameters_from_csv(analysis_configuration_params_file,
+histo_range_x_low, histo_range_x_high = my.get_from_csv(analysis_configuration_params_file,
                                         "geocut_histo_range_x_low", "geocut_histo_range_x_high")
-histo_range_y_low, histo_range_y_high = my.get_parameters_from_csv(analysis_configuration_params_file,
-                                        "geocut_histo_range_y_low", "geocut_histo_range_y_high")
-geocut_numberofbin_per_axis = my.get_parameters_from_csv(analysis_configuration_params_file,
+histo_range_dtx_low, histo_range_dtx_high = my.get_from_csv(analysis_configuration_params_file,
+                                        "geocut_histo_range_dtx_low", "geocut_histo_range_dtx_high")
+geocut_numberofbin_per_axis = my.get_from_csv(analysis_configuration_params_file,
                                         "geocut_numberofbin_per_axis")
 histo_range_x = [histo_range_x_low, histo_range_x_high] # [mm]
-histo_range_y = [histo_range_y_low, histo_range_y_high] # [murad]
+histo_range_dtx = [histo_range_dtx_low, histo_range_dtx_high] # [murad]
 numbin = geocut_numberofbin_per_axis
 
 ################# BIN THE DATA
@@ -148,7 +151,7 @@ x_slices = events.groupby("BINNED_Tracks_d0_x") # TODO scoprire come funzionano 
 # Find the edges in the intensity (square of the derivative)
 
 
-low_percentage, high_percentage, low_data_threshold = my.get_parameters_from_csv(analysis_configuration_params_file,
+low_percentage, high_percentage, low_data_threshold = my.get_from_csv(analysis_configuration_params_file,
                                         "geocut_std_low_percentage", "geocut_std_high_percentage", "geocut_std_low_data_threshold")
 robust_std = lambda x: robust_standard_deviation(x,low_percentage,high_percentage,low_data_threshold)
 std_slices = x_slices["Delta_Theta_x"].apply(robust_std).values
@@ -191,7 +194,7 @@ proposed_cut_right = right_edge - side_bins_to_cut * x_bin_width
 ################ PLOT HISTOGRAM
 plt.figure()
 plt.hist2d(events.loc[:,'Tracks_d0_x'].values, 1e6*(events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values),\
-bins=numbin, norm=LogNorm(), range=[histo_range_x,histo_range_y])
+bins=numbin, norm=LogNorm(), range=[histo_range_x,histo_range_dtx])
 plt.axvline(x=proposed_cut_left, linestyle="dashed", color='Crimson', label="")
 plt.axvline(x=proposed_cut_right, linestyle="dashed", color='Crimson', label="")
 
@@ -265,7 +268,9 @@ cut_right = float(ei.edit_input("xmax = ", round(proposed_cut_right,4)))
 #
 #
 # parameters_table.to_csv("crystal_analysis_parameters.csv",sep='\t')
-my.save_parameters_in_csv("crystal_analysis_parameters.csv",
+my.save_in_csv("crystal_analysis_parameters.csv",
                             xmin=cut_left,
-                            xmax=cut_right)
+                            xmax=cut_right,
+                            ymin=cut_y_low,
+                            ymax=cut_y_high)
 #################

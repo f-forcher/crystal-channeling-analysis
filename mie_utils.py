@@ -69,7 +69,7 @@ def take_closest(myList, myNumber):
     else:
        return before
 
-def get_parameters_from_csv(csv_file, *args):
+def get_from_csv(csv_file, *args):
     """
     Get parameters from a csv file. The syntax of the csv allows comments using
     '#' as prefix and tab as separator.
@@ -81,7 +81,7 @@ def get_parameters_from_csv(csv_file, *args):
     xmax	0.475
 
     Example use:
-    >>> a0, b1, c2 = get_parameters_from_csv("conf/file.csv","a0","b1","c2")
+    >>> a0, b1, c2 = get_from_csv("conf/file.csv","a0","b1","c2")
 
     csv_file: file name of the csv.
 
@@ -104,16 +104,16 @@ def get_parameters_from_csv(csv_file, *args):
     if len(values) == 1:
         # Extract the value from the values array if it's only one variable
         # So for example in assigments like
-        # >>> x = get_parameters_from_csv("f.csv", "x")
+        # >>> x = get_from_csv("f.csv", "x")
         # x will be a scalar like 10, and not [10]
         return values[0]
     else:
         # Python already unzips if one assigns to multiple vars:
-        # >>> x,y = get_parameters_from_csv("f.csv", "x", "y")
+        # >>> x,y = get_from_csv("f.csv", "x", "y")
         # x,y already scalars in this case
         return values
 
-def save_parameters_in_csv(csv_file, **kwargs):
+def save_in_csv(csv_file, **kwargs):
     """
     Save parameters in a csv file, if the file does not exist create it,
     otherwise append to it. If the parameters to write already exist in the file
@@ -126,7 +126,7 @@ def save_parameters_in_csv(csv_file, **kwargs):
     xmax	0.475
 
     Example use:
-    >>> save_parameters_in_csv("conf/file.csv",a0=1,b1=-1,c2=1e10)
+    >>> save_in_csv("conf/file.csv",a0=1,b1=-1,c2=1e10)
 
     csv_file: file name of the csv.
 

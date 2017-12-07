@@ -43,7 +43,7 @@ for df in evts:
 #
 # parameters_table.to_csv("crystal_analysis_parameters.csv",sep='\t')
 
-my.save_parameters_in_csv("crystal_analysis_parameters.csv",
+my.save_in_csv("crystal_analysis_parameters.csv",
                            root_file_name=file_name,
                            crystal_name=crystal_name,
                            run_number=run_number,
