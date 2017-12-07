@@ -52,10 +52,10 @@ torcorr_eff_low_data_threshold: 50
 
 
 #### Efficiency fit inizialization parameters for sklearn.mixture.GaussianMixture
-torcorr_eff_AM_means_init: -10   # [murad], typical value
+torcorr_eff_AM_means_init: -0   # [murad], typical value
 torcorr_eff_CH_means_init:  50   # [murad], maybe better specified per crystal
-torcorr_eff_AM_sigma_init:  23   # [murad], typical?
-torcorr_eff_CH_sigma_init:  15   # [murad], typical?
+torcorr_eff_AM_sigma_init:  4   # [murad], typical?
+torcorr_eff_CH_sigma_init:  4   # [murad], typical?
 torcorr_eff_fit_tolerance:  1e-6 # Delta_LL per iteration needs to reach fit_tol
                                  # before max_iterations is reached, otherwise
 torcorr_eff_max_iterations: 200  # ignore y-thetax bin, if fit did not converge

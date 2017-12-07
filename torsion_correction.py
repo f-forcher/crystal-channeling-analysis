@@ -161,7 +161,7 @@ if '_'+run_number+'_' not in file_name:
 # else if os.path.isfile(run_number + '_crystal_analysis_parameters.csv'):
 #     crystal_analysis_parameters_file = run_number + '_crystal_analysis_parameters.csv'
 # print("[LOG]: Reading crystal analysis parameters from ", crystal_analysis_parameters_file)
-cut_left, cut_right = my.get_from_csv(crystal_analysis_parameters_file, "cut_left", "cut_right")
+cut_left, cut_right = my.get_from_csv("crystal_analysis_parameters.csv", "xmin", "xmax")
 cut_y_low, cut_y_high = my.get_from_csv(analysis_configuration_params_file, "cut_y_low", "cut_y_high")
 #################
 
@@ -235,16 +235,16 @@ low_data_threshold = my.get_from_csv(analysis_configuration_params_file,
                                      "torcorr_eff_high_percentage",
                                      "torcorr_eff_low_data_threshold")
 
-AM_means_init, CH_means_init, AM_sigma_init,
-CH_sigma_init, fit_tolerance, max_iterations = my.get_from_csv( \
+AM_means_init, CH_means_init, AM_sigma_init, \
+CH_sigma_init, fit_tolerance = my.get_from_csv( \
                                      analysis_configuration_params_file,
                                      "torcorr_eff_AM_means_init",
                                      "torcorr_eff_CH_means_init",
                                      "torcorr_eff_AM_sigma_init",
                                      "torcorr_eff_CH_sigma_init",
-                                     "torcorr_eff_fit_tolerance",
-                                     "torcorr_eff_max_iterations")
-
+                                     "torcorr_eff_fit_tolerance")
+max_iterations = int(my.get_from_csv(analysis_configuration_params_file,
+                                 "torcorr_eff_max_iterations"))
 
 robust_fit = lambda x: fit_and_get_efficiency(x, lowest_percentage,
                            highest_percentage, low_data_threshold,
