@@ -274,9 +274,10 @@ p, pc = curve_fit(line,efficiencies.xs(center_angle,level=1).index.get_values(),
 #
 # # Plot as 2D array
 plt.figure()
-grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
+#grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
+grid_for_histo
 plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
-           bins=[y_nbins, thetain_x_nbins]) # TODO
+           bins=[y_nbins, thetain_x_nbins], range=[[eff_range_y_low, eff_range_y_high],[eff_range_tx_low, eff_range_tx_high]]) # TODO
 plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
 plt.title(r"Efficiency as function of {}".format(r"$x_{in}$ and $\Delta \theta_{x}$"))
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
