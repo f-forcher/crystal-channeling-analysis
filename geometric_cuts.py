@@ -89,7 +89,7 @@ if '_'+run_number+'_' not in file_name:
 chunksize = 2000000
 interesting_columns = ["Tracks_d0_x", "Tracks_thetaOut_x", "Tracks_thetaIn_x", "SingleTrack"]
 cut_y_low, cut_y_high = my.get_from_csv(analysis_configuration_params_file,
-                                        "geocut_cut_y_low", "geocut_cut_y_high")
+                                        "cut_y_low", "cut_y_high")
 evts = pd.read_hdf(file_name, chunksize = chunksize, columns=interesting_columns,
                    where=["SingleTrack == 1", "Tracks_d0_y > cut_y_low",
                           "Tracks_d0_y < cut_y_high"])
