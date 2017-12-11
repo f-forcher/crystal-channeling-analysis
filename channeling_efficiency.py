@@ -30,7 +30,8 @@ def gaussian_sum(x, c1, mu1, sig1, mu2, sig2):
            (1-c1)*matplotlib.mlab.normpdf(x, mu2, sig2)
 
 
-def fit_channeling(input_df):
+def fit_channeling(input_df,lowest_percentage, highest_percentage,
+                   fit_tolerance,max_iterations):
     """
     Fit the histogram for two gaussian peaks (CH for channeling and AM for
     amorphous), then return the fit object for further processing.
@@ -56,10 +57,10 @@ def fit_channeling(input_df):
 #        weights_init=[0.4, 0.6],
         init_params="kmeans",
         n_init = 2,
-        tol=1e-6,
+        tol=fit_tolerance,
 #         precisions_init = [[[1/16]],[[1/16]]],
         #warm_start=True,
-        max_iter=500)
+        max_iter=max_iterations)
 
     ################# GET THE DATA FROM THE DATAFRAME
     lowest_percentage = 0.3
@@ -149,6 +150,18 @@ crystal_name = sys.argv[2]
 run_number = sys.argv[3]
 particle_name = sys.argv[4]
 particle_energy_input = sys.argv[5] # [GeV]
+
+# Use a run specific params file, otherwise look for a crystal specific one,
+# otherwise use the general one.
+if os.path.isfile(run_number + '_analysis_configuration_params.csv'):
+    analysis_configuration_params_file = run_number + '_analysis_configuration_params.csv'
+elif os.path.isfile(crystal_name + '_analysis_configuration_params.csv.csv'):
+    analysis_configuration_params_file = crystal_name + '_analysis_configuration_params.csv'
+else:
+    analysis_configuration_params_file = 'analysis_configuration_params.csv'
+print("[LOG]: Reading crystal analysis parameters from ", analysis_configuration_params_file)
+
+
 # Check if the run number is in the actual data file name, otherwise print a
 # warning
 if '_'+run_number+'_' not in file_name:
@@ -182,7 +195,6 @@ theta_c = math.sqrt(2*pot_well/particle_energy) * (1 - critical_radius/crystal_c
 # c1_thetavr, c2_thetavr = (-1.5, 1.66666)
 # theta_vr =  c1_thetavr * theta_c * (1 - c2_thetavr*critical_radius/crystal_curvature_radius) # [murad]
 
-x_histo = range(-100,100,1) # [murad]
 
 ################# FIT USING 5 and 10 AS CUTS
 # ang_cut_low = [-5,-10] # [murad]
@@ -229,7 +241,25 @@ x_histo = range(-100,100,1) # [murad]
 ang_cut_low = [-theta_c / 2, -theta_c]
 ang_cut_high = [theta_c / 2, theta_c]
 
+dtx_low, dtx_high = my.get_from_csv(analysis_configuration_params_file,
+                                             "chan_hist_range_dtx_low",
+                                             "chan_hist_range_dtx_high",
+                                             )
+dtx_nbins = int(my.get_from_csv(analysis_configuration_params_file,
+                                             "chan_hist_tx_nbins"))
+x_histo = np.linspace(dtx_low,dtx_high,dtx_nbins + 1) # [murad]
+
+
+
 print("New Thetac: ", theta_c)
+
+lowest_percentage, highest_percentage = my.get_from_csv(analysis_configuration_params_file,
+                                     "chan_low_percentage",
+                                     "chan_high_percentage")
+chan_fit_tolerance = my.get_from_csv(analysis_configuration_params_file,
+                                 "chan_fit_tolerance")
+max_iterations = int(my.get_from_csv(analysis_configuration_params_file,
+                                 "chan_max_iterations"))
 
 i = 0
 for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
@@ -239,9 +269,12 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     # plt.hist2d(geocut_df.loc[:,'Tracks_thetaIn_x'].values, \
     #  geocut_df.loc[:,'Tracks_thetaOut_x'].values - geocut_df.loc[:,'Tracks_thetaIn_x'].values,\
     #  bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
-    fit_results = fit_channeling(geocut_df.Delta_Theta_x)[0]
-    filtered_data = fit_channeling(geocut_df.Delta_Theta_x)[1]
-    plt.hist(filtered_data, bins=200, range=[-100,100], normed=False) # [murad]
+    fit_and_data = fit_channeling(geocut_df.Delta_Theta_x,
+                                  lowest_percentage, highest_percentage,
+                                  chan_fit_tolerance, max_iterations)
+    fit_results = fit_and_data[0]
+    filtered_data = fit_and_data[1]
+    plt.hist(filtered_data, bins=dtx_nbins, range=[dtx_low,dtx_high], normed=False) # [murad]
 
 
     total_number_of_events = fit_results["nevents"]
