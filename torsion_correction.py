@@ -258,9 +258,9 @@ efficiencies = gruppi["Delta_Theta_x"].aggregate(robust_fit)
 # FIT THE TORSION
 avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.values, \
                     weights=efficiencies.dropna().xs(xx,level=0).values) for xx \
-                    in efficiencies.dropna().xs(0.5,level=1).index.values]
+                    in efficiencies.xs(0.5,level=1).index.values]
 avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.dropna().xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
-                    in efficiencies.dropna().xs(0.5,level=1).index.values]
+                    in efficiencies.xs(0.5,level=1).index.values]
 # avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
 #                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
