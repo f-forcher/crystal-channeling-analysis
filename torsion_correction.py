@@ -253,21 +253,22 @@ robust_fit = lambda x: fit_and_get_efficiency(x, lowest_percentage,
 efficiencies = gruppi["Delta_Theta_x"].aggregate(robust_fit)
 
 
-
+# Theta_x bin close to the middle, to avoid NaNs
+center_angle = efficiencies.index[int(thetain_x_nbins//2)][1]
 
 # FIT THE TORSION
 avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.values, \
                     weights=efficiencies.dropna().xs(xx,level=0).values) for xx \
-                    in efficiencies.xs(0.5,level=1).index.values]
+                    in efficiencies.xs(center_angle,level=1).index.values]
 avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.dropna().xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
-                    in efficiencies.xs(0.5,level=1).index.values]
+                    in efficiencies.xs(center_angle,level=1).index.values]
 # avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
 #                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
 # plt.plot(avg_Delta_Theta_x_fit_NaNzero, "-", label="fit NaN zero")
-line_par, line_par_cov = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, method="dogbox", loss="cauchy")
-p, pc = curve_fit(line,efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x)
+line_par, line_par_cov = curve_fit(line,efficiencies.xs(center_angle,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, method="dogbox", loss="cauchy")
+p, pc = curve_fit(line,efficiencies.xs(center_angle,level=1).index.get_values(),avg_Delta_Theta_x)
 
 
 #
@@ -280,7 +281,7 @@ plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number
 plt.title(r"Efficiency as function of {}".format(r"$x_{in}$ and $\Delta \theta_{x}$"))
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
 #plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
+plt.plot(efficiencies.xs(center_angle,level=1).index.get_values(),line(efficiencies.xs(center_angle,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
 plt.xlabel(r'$y_{in}\ [mm]$')
 plt.ylabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 # print(events)
