@@ -295,9 +295,9 @@ plt.show()
 
 ################# SAVE FIT PLOT TO FILE
 plt.figure()
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
-plt.plot(efficiencies.xs(0.5,level=1).index.get_values(),line(efficiencies.xs(0.5,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
+plt.plot(efficiencies.xs(center_angle,level=1).index.get_values(),avg_Delta_Theta_x, "-", label="Avg")
+plt.plot(efficiencies.xs(center_angle,level=1).index.get_values(),avg_Delta_Theta_x_fit_noNaN, "-", label="Filtered fit")
+plt.plot(efficiencies.xs(center_angle,level=1).index.get_values(),line(efficiencies.xs(center_angle,level=1).index.get_values(), *line_par), label="Torsion linear fit", color = 'r')
 plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
 plt.title(r"Torsion fit: {}".format(r"$y_{in}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$y_{in}\ [mm]$')
