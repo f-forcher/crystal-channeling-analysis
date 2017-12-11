@@ -51,7 +51,7 @@ def fit_and_get_efficiency(input_data, lowest_percentage,
         init_params="kmeans",
         n_init = 2,
         tol=fit_tolerance, # Typical 1e-6
-        precisions_init = [[[1/AM_sigma_init**2]],[[1/CH_sigma_init**2]]], # [murad^-2] 23 15
+#        precisions_init = [[[1/AM_sigma_init**2]],[[1/CH_sigma_init**2]]], # [murad^-2] 23 15
         #warm_start=True,
         max_iter=max_iterations) # Typical 200
 
