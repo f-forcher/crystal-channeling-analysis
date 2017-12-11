@@ -11,6 +11,11 @@ import mie_utils as my
 
 
 file_name = sys.argv[1]
+crystal_name = sys.argv[2]
+run_number = sys.argv[3]
+particle_name = sys.argv[4]
+particle_energy = sys.argv[5]
+
 
 chunksize = 2000000
 evts = read_root(file_name, chunksize=chunksize) # iterator iterating the chunks
