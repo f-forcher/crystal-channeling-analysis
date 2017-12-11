@@ -274,8 +274,7 @@ p, pc = curve_fit(line,efficiencies.xs(center_angle,level=1).index.get_values(),
 #
 # # Plot as 2D array
 plt.figure()
-#grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
-grid_for_histo
+grid_for_histo=np.array([list(v) for v in efficiencies.index.values])
 plt.hist2d(grid_for_histo[:,0],grid_for_histo[:,1], weights=efficiencies.values,
            bins=[y_nbins, thetain_x_nbins], range=[[eff_range_y_low, eff_range_y_high],[eff_range_tx_low, eff_range_tx_high]]) # TODO
 plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
