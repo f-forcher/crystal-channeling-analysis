@@ -261,7 +261,8 @@ avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.value
                     weights=efficiencies.dropna().xs(xx,level=0).values) for xx \
                     in efficiencies.xs(center_angle,level=1).index.values]
 avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.fillna(0.5).xs(xx,level=0).values, \
-                               sigma=1/np.sqrt(gruppi.apply(len).xs(xx,level=0).values),method="dogbox",loss="cauchy")[0][0] for xx \
+                               #sigma=1/np.sqrt(gruppi.apply(len).xs(xx,level=0).values),
+                               method="dogbox",loss="cauchy")[0][0] for xx \
                     in efficiencies.xs(center_angle,level=1).index.values]
 # avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
 #                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]
