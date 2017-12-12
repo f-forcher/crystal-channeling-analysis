@@ -150,6 +150,8 @@ crystal_name = sys.argv[2]
 run_number = sys.argv[3]
 particle_name = sys.argv[4]
 particle_energy_input = sys.argv[5] # [GeV]
+run_date = sys.argv[6] # [GeV]
+
 
 # Use a run specific params file, otherwise look for a crystal specific one,
 # otherwise use the general one.
@@ -288,7 +290,7 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     thetac_title = r"$\theta_c/2$" if i == 0 else r"$\theta_c$"
     cut_value = theta_c/2 if i == 0 else theta_c
     plt.suptitle(r"{} run {}, {} {} GeV — Channeling, cut ± {} = ±{:.3}".format(crystal_name,run_number,particle_name,particle_energy_input,thetac_title,cut_value),fontweight='bold')
-    plt.title(r"Efficiency {:.3}% ± {:.1}% — Bending Angle {:.4} ± {:.1} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
+    plt.title(r"Efficiency {:.3}% ± {:.1f}% — Bending Angle {:.4} ± {:.1f} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
                                                                                 fit_results["mean_CH"],fit_results["mean_CH_err"],r"$[\mu rad]$"))
     plt.xlabel(r'$\Delta \theta_{x}\ [\mu rad]$')
     plt.ylabel('Frequency')
@@ -308,4 +310,52 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
 
 
     i=i+1
+#################
+
+
+
+################# WRITE TO LATEX THE PARAMS
+cut_x_left, cut_x_right = my.get_from_csv("crystal_analysis_parameters.csv", "xmin", "xmax")
+
+tor_m,tor_q,tor_m_err,tor_q_err = my.get_from_csv("crystal_analysis_parameters.csv",\
+                                  "torsion_m", "torsion_q", "torsion_m_err", "torsion_q_err")
+
+cut_y_low, cut_y_high = my.get_from_csv(analysis_configuration_params_file, "cut_y_low", "cut_y_high")
+
+#Example \newcommand{\myname}{Francesco Forcher}
+
+#with open("latex/text_gen-definitions.tex", "a") as myfile:
+file_name = sys.argv[1]
+crystal_name = sys.argv[2]
+run_number = sys.argv[3]
+particle_name = sys.argv[4]
+particle_energy_input = sys.argv[5] # [GeV]
+run_date = sys.argv[6] # [GeV]
+
+with open("latex/test_gen-definitions.tex","w") as myfile:
+    myfile.write(r"% FILE GENERATED AUTOMATICALLY")
+    myfile.write("\n\n")
+    myfile.write("\\newcommand{{{}}}{{{}}}\n".format("\\myname","Francesco Forcher"))
+    myfile.write("\\newcommand{{{}}}{{{}}}\n".format("\\crystalname",crystal_name))
+    myfile.write("\\newcommand{{{}}}{{{}}}\n".format("\\runnumber", run_number))
+    myfile.write("\\newcommand{{{}}}{{{}}}\n".format("\\rundate", run_date))
+    myfile.write("\\newcommand{{{}}}{{{}}}\n".format("\\particletype", particle_name))
+    myfile.write("\\newcommand{{{}}}{{{}}}\n".format("\\particleenergy", particle_energy_input + " GeV"))
+
+    myfile.write("\n")
+
+    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\xmin",cut_x_left))
+    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\xmax",cut_x_right))
+    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\ymin",cut_x_left))
+    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\ymax",cut_x_right))
+
+    myfile.write("\n")
+
+    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionm",   tor_m))
+    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionq",   tor_q))
+    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionmerr",tor_m_err))
+    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionqerr",tor_q_err))
+
+
+
 #################
