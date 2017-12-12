@@ -30,41 +30,11 @@ def gaussian_sum(x, c1, mu1, sig1, mu2, sig2):
            (1-c1)*matplotlib.mlab.normpdf(x, mu2, sig2)
 
 
-def fit_channeling(input_df,lowest_percentage, highest_percentage,
-                   fit_tolerance,max_iterations):
-    """
-    Fit the histogram for two gaussian peaks (CH for channeling and AM for
-    amorphous), then return the fit object for further processing.
-
-    data: input dataset.
-
-    return: dict cointaining the parameters:
-            "weight_AM"
-            "weight_CH"
-            "mean_AM"
-            "mean_CH"
-            "sigma_AM"
-            "sigma_CH"
-
-    """
-    clf = mixture.GaussianMixture(
-        n_components=2,
-        covariance_type='full',
-        verbose=0,
-        verbose_interval=10,
-        random_state=random.SystemRandom().randrange(0,2147483647), # 2**31-1
-#        means_init=[[-5], [77]],
-#        weights_init=[0.5, 0.5],
-        init_params="kmeans",
-        n_init = 5,
-        tol=fit_tolerance,
-#        precisions_init = [[[1/10**2]],[[1/10**2]]],
-        #warm_start=True,
-        max_iter=max_iterations)
+def filter_data(input_df,lowest_percentage, highest_percentage,dtx_low,dtx_high,dtx_nbins):
 
     ################# GET THE DATA FROM THE DATAFRAME
-    lowest_percentage = 3
-    highest_percentage = 97
+    lowest_percentage = 1
+    highest_percentage = 99
     first_percentile = np.percentile(input_df, lowest_percentage)
     last_percentile = np.percentile(input_df, highest_percentage)
     data_reduced = input_df.values[(input_df.values >= \
@@ -73,74 +43,76 @@ def fit_channeling(input_df,lowest_percentage, highest_percentage,
 
     ################# FIT THE DATA
     # Check that we have enough data for a fit, otherwise just return eff=0
-    clf.fit(data)
-
-    if not clf.converged_:
-        print("[LOG]: Fit did not converge in this bin, bin ignored")
-        efficiency = np.NaN
+    datahisto = np.histogram(data, bins=dtx_nbins, range=[dtx_low,dtx_high], normed=True)
 
 
-    r_m1, r_m2 = clf.means_
-    w1, w2 = clf.weights_
-    m1, m2 = r_m1[0], r_m2[0]
-    r_c1, r_c2 = clf.covariances_
-    #r_c1 = clf.covariances_
-    #r_c2 = clf.covariances_
-    c1, c2 = np.sqrt(r_c1[0][0]), np.sqrt(r_c2[0][0])
-
-    # print("Means: ", clf.means_, "\n")
-    # print("Weights: ", clf.weights_, "\n")
-    # print("Precisions: ",  1/c1, " ", 1/c2, "\n")
-    # print("Covariances: ", c1, " ", c2, "\n")
-
-    fit_results = {}
-    # Save the weights in the right array
-    # Lower delta_thetax is the AM peak, higher CH
-    fit_results["nevents"] = len(data)
-    if (m1 < m2):
-        fit_results["weight_AM"] = w1
-        fit_results["weight_CH"] = w2
-        fit_results["mean_AM"] = m1
-        fit_results["mean_CH"] = m2
-        fit_results["sigma_AM"] = c1
-        fit_results["sigma_CH"] = c2
-    else:
-        fit_results["weight_AM"] = w2
-        fit_results["weight_CH"]= w1
-        fit_results["mean_AM"] = m2
-        fit_results["mean_CH"] = m1
-        fit_results["sigma_AM"] = c2
-        fit_results["sigma_CH"] = c1
-
-    # Calculate errors plugging the found parameters in a chi2 fit.
-    data_histo = np.histogram(data,bins=200,normed=True)
-    histo_bin_centers = (data_histo[1] + (data_histo[1][1] - data_histo[1][0])/2)[:-1]
-    initial_guess = [fit_results["weight_AM"], fit_results["mean_AM"], fit_results["sigma_AM"],
-        fit_results["mean_CH"], fit_results["sigma_CH"]]
-    popt, pcov = curve_fit(gaussian_sum, histo_bin_centers, data_histo[0],
-                            p0=initial_guess)
-
-    print(popt)
-
-    # # Plot the chi2 fit, for debug purposes
-    # plt.figure()
-    # plt.plot(histo_bin_centers,data_histo[0],".")
-    # plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*popt))
-    # plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*initial_guess))
     #
-    # plt.show()
+    # if not clf.converged_:
+    #     print("[LOG]: Fit did not converge in this bin, bin ignored")
+    #     efficiency = np.NaN
+    #
+    #
+    # r_m1, r_m2 = clf.means_
+    # w1, w2 = clf.weights_
+    # m1, m2 = r_m1[0], r_m2[0]
+    # r_c1, r_c2 = clf.covariances_
+    # # r_c1 = clf.covariances_
+    # # r_c2 = clf.covariances_
+    # c1, c2 = np.sqrt(r_c1[0][0]), np.sqrt(r_c2[0][0])
+    #
+    # # print("Means: ", clf.means_, "\n")
+    # # print("Weights: ", clf.weights_, "\n")
+    # # print("Precisions: ",  1/c1, " ", 1/c2, "\n")
+    # # print("Covariances: ", c1, " ", c2, "\n")
+    #
+    # fit_results = {}
+    # # Save the weights in the right array
+    # # Lower delta_thetax is the AM peak, higher CH
+    # fit_results["nevents"] = len(data)
+    # if (m1 < m2):
+    #     fit_results["weight_AM"] = w1
+    #     fit_results["weight_CH"] = w2
+    #     fit_results["mean_AM"] = m1
+    #     fit_results["mean_CH"] = m2
+    #     fit_results["sigma_AM"] = c1
+    #     fit_results["sigma_CH"] = c2
+    # else:
+    #     fit_results["weight_AM"] = w2
+    #     fit_results["weight_CH"]= w1
+    #     fit_results["mean_AM"] = m2
+    #     fit_results["mean_CH"] = m1
+    #     fit_results["sigma_AM"] = c2
+    #     fit_results["sigma_CH"] = c1
+    #
+    # # Calculate errors plugging the found parameters in a chi2 fit.
+    # data_histo = np.histogram(data,bins=200,normed=True)
+    # histo_bin_centers = (data_histo[1] + (data_histo[1][1] - data_histo[1][0])/2)[:-1]
+    # initial_guess = [fit_results["weight_AM"], fit_results["mean_AM"], fit_results["sigma_AM"],
+    #     fit_results["mean_CH"], fit_results["sigma_CH"]]
+    # popt, pcov = curve_fit(gaussian_sum, histo_bin_centers, data_histo[0],
+    #                         p0=initial_guess)
+    #
+    # print(popt)
+    #
+    # # # Plot the chi2 fit, for debug purposes
+    # # plt.figure()
+    # # plt.plot(histo_bin_centers,data_histo[0],".")
+    # # plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*popt))
+    # # plt.plot(histo_bin_centers,gaussian_sum(histo_bin_centers,*initial_guess))
+    # #
+    # # plt.show()
+    #
+    # perr = np.sqrt(np.diag(pcov))
+    # # Should be in same order as in p0 of curve_fit
+    # fit_results["weight_AM_err"] = perr[0]
+    # fit_results["weight_CH_err"] = perr[0] # c2=1-c1, by propagation same error
+    # fit_results["mean_AM_err"]   = perr[1]
+    # fit_results["sigma_AM_err"]  = perr[2]
+    # fit_results["mean_CH_err"]   = perr[3]
+    # fit_results["sigma_CH_err"]  = perr[4]
 
-    perr = np.sqrt(np.diag(pcov))
-    # Should be in same order as in p0 of curve_fit
-    fit_results["weight_AM_err"] = perr[0]
-    fit_results["weight_CH_err"] = perr[0] # c2=1-c1, by propagation same error
-    fit_results["mean_AM_err"]   = perr[1]
-    fit_results["sigma_AM_err"]  = perr[2]
-    fit_results["mean_CH_err"]   = perr[3]
-    fit_results["sigma_CH_err"]  = perr[4]
 
-
-    return fit_results,data
+    return data
 
 
 ######################################
@@ -269,14 +241,23 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     # plt.hist2d(geocut_df.loc[:,'Tracks_thetaIn_x'].values, \
     #  geocut_df.loc[:,'Tracks_thetaOut_x'].values - geocut_df.loc[:,'Tracks_thetaIn_x'].values,\
     #  bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
-    fit_and_data = fit_channeling(geocut_df.Delta_Theta_x,
-                                  lowest_percentage, highest_percentage,
-                                  chan_fit_tolerance, max_iterations)
-    fit_results = fit_and_data[0]
-    filtered_data = fit_and_data[1]
-    #plt.yscale('log', nonposy='clip')
+
+
+    # fit_and_data = fit_channeling(geocut_df.Delta_Theta_x,
+    #                               lowest_percentage, highest_percentage,
+    #                               chan_fit_tolerance, max_iterations)
+    # fit_results = fit_and_data[0]
+    # filtered_data = fit_and_data[1]
+
+    datahisto = np.histogram(filtered_data, bins=dtx_nbins, range=[dtx_low,dtx_high], normed=False)
+
+    peak_index = signal.find_peaks_cwt(datahisto[0],list(range(10,35))))
+
+    peaks = pd.DataFrame({'x': datahisto[1][peak_index], # +1: see above
+                          'intensity': datahisto[1]}) # We dont need +1 here
+
+
     plt.hist(geocut_df.Delta_Theta_x, bins=dtx_nbins, range=[dtx_low,dtx_high], normed=False) # [murad]
-    #plt.hist(filtered_data, bins=dtx_nbins, range=[dtx_low,dtx_high], normed=False) # [murad]
 
 
     total_number_of_events = fit_results["nevents"]
@@ -289,7 +270,7 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     cut_value = theta_c/2 if i == 0 else theta_c
     plt.suptitle(r"{} run {}, {} {} GeV — Channeling, cut ± {} = ±{:.3}".format(crystal_name,run_number,particle_name,particle_energy_input,thetac_title,cut_value),fontweight='bold')
     plt.title(r"Efficiency {:.3}% ± {:.1}% — Bending Angle {:.4} ± {:.1} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
-                                                                                fit_results["mean_CH"],fit_results["mean_CH_err"],r"$[\mu rad]$"))
+                                                                                    fit_results["mean_CH"],fit_results["mean_CH_err"],r"$[\mu rad]$"))
     plt.xlabel(r'$\Delta \theta_{x}\ [\mu rad]$')
     plt.ylabel('Frequency')
     plt.legend()

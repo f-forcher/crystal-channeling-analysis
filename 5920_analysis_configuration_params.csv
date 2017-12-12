@@ -74,8 +74,8 @@ torcorr_eff_thetain_x_nbins:  30
 # Range should be changed if theta_b of crystal is very different from 50 murad
 torcorr_hist_range_tx_low:    -100 # [murad]
 torcorr_hist_range_tx_high:    100 # [murad]
-torcorr_hist_range_dtx_low:   -80  # [murad]
-torcorr_hist_range_dtx_high:   120 # [murad]
+torcorr_hist_range_dtx_low:   -100  # [murad]
+torcorr_hist_range_dtx_high:   150 # [murad]
 torcorr_hist_tx_nbins:         200
 torcorr_hist_dtx_nbins:        100
 ####################################
