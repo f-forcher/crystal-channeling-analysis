@@ -2,3 +2,4 @@
 *.root
 *.hdf
 *.tmp
+latex/test_gen-definitions.tex
