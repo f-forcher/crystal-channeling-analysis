@@ -51,7 +51,7 @@ def fit_and_get_efficiency(input_data, lowest_percentage,
         init_params="kmeans",
         n_init = 2,
         tol=fit_tolerance, # Typical 1e-6
-#        precisions_init = [[[1/AM_sigma_init**2]],[[1/CH_sigma_init**2]]], # [murad^-2] 23 15
+        precisions_init = [[[1/AM_sigma_init**2]],[[1/CH_sigma_init**2]]], # [murad^-2] 23 15
         #warm_start=True,
         max_iter=max_iterations) # Typical 200
 
@@ -262,7 +262,7 @@ avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.value
                     in efficiencies.xs(center_angle,level=1).index.values]
 avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.fillna(0.5).xs(xx,level=0).values, \
                                #sigma=1/np.sqrt(gruppi.apply(len).xs(xx,level=0).values),
-                               method="dogbox",loss="cauchy")[0][0] for xx \
+                               method="dogbox",loss="cauchy", max_nfev=1000*thetain_x_nbins)[0][0] for xx \
                     in efficiencies.xs(center_angle,level=1).index.values]
 # avg_Delta_Theta_x_fit_NaNzero = [curve_fit(gaussian,efficiencies.fillna(0).xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values,method="dogbox",loss="cauchy")[0][0] for xx \
 #                     in efficiencies.fillna(0).xs(0.5,level=1).index.values]

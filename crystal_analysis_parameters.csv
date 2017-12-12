@@ -2,7 +2,7 @@ parameter_name:value
 init_scan:0.0
 xmax:0.5
 xmin:0.0
-torsion_q:-5.676935823734929
-torsion_q_err:0.0745401735027781
-torsion_m_err:0.06646867842937962
-torsion_m:1.481936746920578
+torsion_q:-5.878895405699979
+torsion_q_err:0.48963185589290714
+torsion_m_err:0.24210658803769608
+torsion_m:3.0976661532793384
