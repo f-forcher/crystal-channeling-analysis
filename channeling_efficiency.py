@@ -344,17 +344,17 @@ with open("latex/test_gen-definitions.tex","w") as myfile:
 
     myfile.write("\n")
 
-    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\xmin",cut_x_left))
-    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\xmax",cut_x_right))
-    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\ymin",cut_x_left))
-    myfile.write("\\newcommand{{{}}}{{{:.3}}}\n".format("\\ymax",cut_x_right))
+    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\xmin",float(cut_x_left)))
+    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\xmax",float(cut_x_right)))
+    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\ymin",float(cut_x_left)))
+    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\ymax",float(cut_x_right)))
 
     myfile.write("\n")
 
-    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionm",   tor_m))
-    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionq",   tor_q))
-    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionmerr",tor_m_err))
-    myfile.write("\\newcommand{{{}}}{{{:.1}}}\n".format("\\torsionqerr",tor_q_err))
+    myfile.write("\\newcommand{{{}}}{{{:.1f}}}\n".format("\\torsionm",   float(tor_m)))
+    myfile.write("\\newcommand{{{}}}{{{:.1f}}}\n".format("\\torsionq",   float(tor_q)))
+    myfile.write("\\newcommand{{{}}}{{{:.1f}}}\n".format("\\torsionmerr",float(tor_m_err)))
+    myfile.write("\\newcommand{{{}}}{{{:.1f}}}\n".format("\\torsionqerr",float(tor_q_err)))
 
 
 

@@ -1,4 +1,4 @@
-PWD /home/fforcher/Documents/DATI_CRISTALLI_2017/STF110_2017december/crystal-channeling-analysis/latex
+PWD /home/fforcher/Documents/DATI_CRISTALLI_2017/TCP74_2017december/crystal-channeling-analysis/latex
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
@@ -436,10 +436,6 @@ INPUT crystal_presentation.nav
 INPUT img/CERN_LogoBadge.pdf
 INPUT img/be_dep_logo.pdf
 INPUT ./img/geocuts.pdf
-INPUT img/CERN_LogoBadge_no_transparency.pdf
-INPUT ./img/efficiency_histo.pdf
-INPUT img/CERN_LogoBadge_no_transparency.pdf
-INPUT ./img/torsion_fit.pdf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -452,6 +448,10 @@ INPUT /usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
+INPUT img/CERN_LogoBadge_no_transparency.pdf
+INPUT ./img/efficiency_histo.pdf
+INPUT img/CERN_LogoBadge_no_transparency.pdf
+INPUT ./img/torsion_fit.pdf
 INPUT img/CERN_LogoBadge_no_transparency.pdf
 INPUT ./img/corrected_histo.pdf
 INPUT img/CERN_LogoBadge_no_transparency.pdf

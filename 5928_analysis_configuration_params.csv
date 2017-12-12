@@ -1,0 +1,107 @@
+# File in which the algorithm's parameters, rather than the crystal ones
+# are stored. For example things like number of bins or thresholds.
+#
+# Comments are made by the '#' character, even at the end of a line.
+# Blank lines are skipped
+# The table has the format:
+#   parameter_name:[any spaces]value
+#
+# It's good pratice to write the dimensional units in a inline comment, if any.
+
+
+############ Column headers
+parameter_name:value
+####################################
+
+
+
+############ GEOMETRICAL CUTS: geometric_cuts.py parameters
+#### Geometrical cuts in Y. They are somewhat arbitrary and not from analysis
+cut_y_low: -2 # [mm]
+cut_y_high: 2 # [mm]
+
+#### 2D Histogram plot parameters, x_in vs delta_theta_x
+geocut_histo_range_x_low:  -5   # [mm]
+geocut_histo_range_x_high:  5   # [mm]
+geocut_histo_range_dtx_low:  -100 # [murad]
+geocut_histo_range_dtx_high:  100 # [murad]
+geocut_numberofbin_per_axis:  400
+
+
+#### Robust standard deviation filter parameters
+# Retain the data between these percentiles.
+geocut_std_low_percentage:  10      # [%]
+geocut_std_high_percentage: 90     # [%]
+
+# If data content of vertical slice is lower than this number, set the slice std
+# to 0
+geocut_std_low_data_threshold: 5
+####################################
+
+
+
+############ TORSION CORRECTION: torsion_correction.py parameters
+#### Pre-efficiency-fit data selection filter parameters
+# Retain the data between these percentiles.
+torcorr_eff_low_percentage:  10     # [%]
+torcorr_eff_high_percentage: 90     # [%]
+
+# If data content of y-thetax bin is lower than this number, ignore the bin and
+# do not calculate efficiency (white bin in eff plot)
+torcorr_eff_low_data_threshold: 20
+
+
+#### Efficiency fit inizialization parameters for sklearn.mixture.GaussianMixture
+torcorr_eff_AM_means_init: -0    # [murad], typical?
+torcorr_eff_CH_means_init:  75   # [murad], maybe better specified per crystal
+torcorr_eff_AM_sigma_init:  8    # [murad], typical?
+torcorr_eff_CH_sigma_init:  8    # [murad], typical?
+torcorr_eff_fit_tolerance:  1e-5 # Delta_LL per iteration needs to reach fit_tol
+                                 # before max_iterations is reached, otherwise
+torcorr_eff_max_iterations: 200  # ignore y-thetax bin, if fit did not converge
+
+
+#### Channeling Efficiency plot as function of d0y and thetain_x, parameters
+torcorr_eff_range_y_low:     -2   # [mm], should probably be equal to cut_y_low
+torcorr_eff_range_y_high:     2   # [mm], should probably be equal to cut_y_high
+torcorr_eff_range_tx_low:    -40  # [murad]
+torcorr_eff_range_tx_high:    40  # [murad]
+torcorr_eff_y_nbins:          30
+torcorr_eff_thetain_x_nbins:  30
+
+
+#### Corrected theta_x vs delta_theta_x 2D histogram, parameters
+# Range should be changed if theta_b of crystal is very different from 50 murad
+torcorr_hist_range_tx_low:    -100 # [murad]
+torcorr_hist_range_tx_high:    100 # [murad]
+torcorr_hist_range_dtx_low:   -100  # [murad]
+torcorr_hist_range_dtx_high:   150 # [murad]
+torcorr_hist_tx_nbins:         200
+torcorr_hist_dtx_nbins:        100
+####################################
+
+
+
+############ CHANNELING EFFICIENCY: channeling_efficiency.py parameters
+#### Pre-efficiency-fit data selection filter parameters
+# Retain the data between these percentiles.
+chan_low_percentage:  0.3     # [%]
+chan_high_percentage: 99.7     # [%]
+
+
+#### Efficiency fit inizialization parameters for sklearn.mixture.GaussianMixture
+# chan_AM_means_init: -0    # [murad], No effect atm, commented
+# chan_CH_means_init:  75   # [murad], No effect atm, commented
+# chan_AM_sigma_init:  4    # [murad], No effect atm, commented
+# chan_CH_sigma_init:  4    # [murad], No effect atm, commented
+chan_fit_tolerance:  1e-6 # Delta_LL per iteration needs to reach fit_tol
+                          # before max_iterations is reached, otherwise
+chan_max_iterations: 500  # ignore y-thetax bin, if fit did not converge
+
+
+#### Corrected theta_x vs delta_theta_x 2D histogram, parameters
+# Range should be changed if theta_b of crystal is very different from 50 murad
+chan_hist_range_dtx_low:    -100 # [murad]
+chan_hist_range_dtx_high:    150 # [murad]
+chan_hist_tx_nbins:          250
+####################################
