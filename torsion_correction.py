@@ -326,10 +326,7 @@ my.save_in_csv("crystal_analysis_parameters.csv",
                             torsion_q_err=line_par_err[1],)
 #################
 
-
-################# CORRECT FOR TORSION AND SHOW THE PLOT
-events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
-                              (tor_m*events["Tracks_d0_y"]+tor_q))# + init_scan
+################# UNCORRECTED DATA
 plt.figure()
 hist_tx_nbins, hist_dtx_nbins = my.get_from_csv(analysis_configuration_params_file,
                                              "torcorr_hist_tx_nbins",
@@ -348,7 +345,35 @@ plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOu
            range=[[hist_range_tx_low, hist_range_tx_high],
                   [hist_range_dtx_low, hist_range_dtx_high]])
 plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
-plt.title(r"Histogram: {}".format(r"$y_{in}$ vs $\Delta \theta_{x}$"))
+plt.title(r"Histogram not corrected: {}".format(r"$\theta_{x}$ vs $\Delta \theta_{x}$"))
+plt.xlabel(r'$\theta_{x_{in}}\ [\mu rad]$')
+plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
+# print(events)
+plt.colorbar()
+#plt.tight_layout()
+plt.savefig("latex/img/nocorr_histo.pdf")
+plt.show()
+#################
+
+################# SAVE TO HDF FILE THE ORIGINAL DATA (BUT WITH CUTS)
+events.to_hdf("nocorr_"+file_name+".hdf","simpleEvent",
+                format="table",
+                fletcher32=True, mode="a", complevel=9, append=False,
+                data_columns=['Tracks_thetaIn_x', 'Tracks_thetaOut_x'])
+#################
+
+
+################# CORRECT FOR TORSION AND SHOW THE PLOT
+events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
+                              (tor_m*events["Tracks_d0_y"]+tor_q))# + init_scan
+plt.figure()
+plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
+           bins=[hist_tx_nbins,hist_dtx_nbins],
+           norm=LogNorm(),
+           range=[[hist_range_tx_low, hist_range_tx_high],
+                  [hist_range_dtx_low, hist_range_dtx_high]])
+plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy),fontweight='bold')
+plt.title(r"Histogram corrected for torsion: {}".format(r"$\theta_{x}$ vs $\Delta \theta_{x}$"))
 plt.xlabel(r'$\theta_{x_{in}}\ [\mu rad]$')
 plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
 # print(events)

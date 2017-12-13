@@ -2,10 +2,10 @@ parameter_name:value
 init_scan:0.0
 xmax:2.0
 xmin:0.05
-torsion_q:4.655068188310874
-torsion_q_err:0.5523739289789372
-torsion_m_err:0.5555508381867398
-torsion_m:-0.464688111675522
+torsion_q:4.64670888111152
+torsion_q_err:0.5757489609732374
+torsion_m_err:0.5828738882587896
+torsion_m:-0.4237043236122532
 ymin:-3.0
 ymax:3.0
 crystal_name:TCP74
