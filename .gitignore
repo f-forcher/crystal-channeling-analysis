@@ -3,4 +3,5 @@
 *.hdf
 *.tmp
 latex/test_gen-definitions.tex
+latex/img/*
 crystal_analysis_parameters.csv
