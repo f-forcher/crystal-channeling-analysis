@@ -83,6 +83,11 @@ torcorr_hist_dtx_nbins:        100
 
 
 ############ CHANNELING EFFICIENCY: channeling_efficiency.py parameters
+#### How much to move the absolute position of the cuts
+# Example, with cuts [-5,5] and offset +3, we have an actual cut of [-2,8]
+# Useful if torsion correction is not employed, to center the cuts
+chan_center_offset: 0 # [murad]
+
 #### Pre-efficiency-fit data selection filter parameters
 # Retain the data between these percentiles.
 chan_low_percentage:  0.3     # [%]

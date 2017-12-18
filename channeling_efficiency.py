@@ -239,9 +239,15 @@ theta_c = math.sqrt(2*pot_well/particle_energy) * (1 - critical_radius/crystal_c
 # crystal_curvature_radius = crystal_lenght / (theta_bending*1e-6)
 # theta_c = math.sqrt(2*pot_well/particle_energy)*1e6 * (1 - critical_radius/crystal_curvature_radius) # [murad]
 
+#### How much to move the absolute position of the cuts
+# Example, with cuts [-5,5] and offset +3, we have an actual cut of [-2,8]
+# Useful if torsion correction is not employed, to center the cuts
+center_offset = my.get_from_csv(analysis_configuration_params_file,
+                                             "chan_center_offset"
+                                             )
 
-ang_cut_low = [-theta_c / 2, -theta_c]
-ang_cut_high = [theta_c / 2, theta_c]
+ang_cut_low = [center_offset - theta_c / 2, center_offset - theta_c]
+ang_cut_high = [center_offset + theta_c / 2, center_offset + theta_c]
 
 dtx_low, dtx_high = my.get_from_csv(analysis_configuration_params_file,
                                              "chan_hist_range_dtx_low",

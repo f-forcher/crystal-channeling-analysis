@@ -41,12 +41,6 @@ geocut_std_low_data_threshold: 5
 
 
 ############ TORSION CORRECTION: torsion_correction.py parameters
-#### How much to move the absolute position of the cuts
-# Example, with cuts [-5,5] and offset +3, we have an actual cut of [-2,8]
-# Useful if torsion correction is not employed, to center the cuts
-chan_center_offset: 0 # [murad]
-
-
 #### Pre-efficiency-fit data selection filter parameters
 # Retain the data between these percentiles.
 torcorr_eff_low_percentage:  10     # [%]
@@ -89,6 +83,12 @@ torcorr_hist_dtx_nbins:        100
 
 
 ############ CHANNELING EFFICIENCY: channeling_efficiency.py parameters
+#### How much to move the absolute position of the cuts
+# Example, with cuts [-5,5] and offset +3, we have an actual cut of [-2,8]
+# Useful if torsion correction is not employed, to center the cuts
+chan_center_offset: -14 # [murad]
+
+
 #### Pre-efficiency-fit data selection filter parameters
 # Retain the data between these percentiles.
 chan_low_percentage:  0.3     # [%]
@@ -103,6 +103,8 @@ chan_high_percentage: 99.7     # [%]
 chan_fit_tolerance:  1e-6 # Delta_LL per iteration needs to reach fit_tol
                           # before max_iterations is reached, otherwise
 chan_max_iterations: 500  # ignore y-thetax bin, if fit did not converge
+
+chan_angcut_offset:
 
 
 #### Corrected theta_x vs delta_theta_x 2D histogram, parameters
