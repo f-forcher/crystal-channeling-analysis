@@ -271,17 +271,23 @@
 
 \column{.7\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=\linewidth]{torsion_fit.pdf}\\
+\includegraphics[width=\linewidth]{geocuts.pdf}\\
 %\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
 \column{.3\textwidth} % Left column and width
 Cuts in x:
 \begin{itemize}[leftmargin=*]
- \item m: \torsionm\ [$\mu$rad/mm]
- \item q: \torsionq\ [$\mu$rad]
+ \item x1: \xmin\ [mm]
+ \item x2: \xmax\ [mm]
+\end{itemize}
+Cuts in y:
+\begin{itemize}[leftmargin=*]
+ \item y1: \ymin\ [mm]
+ \item y2: \ymax\ [mm]
 \end{itemize}
 
+\end{columns}
 \end{frame}
 
 
@@ -345,13 +351,23 @@ Efficiency fit:
 
 
 \begin{frame}
-\frametitle{Torsion analysis: corrected histogram}
+\frametitle{Deflection histograms}
 
+\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
+
+\column{.5\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{corrected_histo.pdf}\\
-%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\includegraphics[width=\linewidth]{nocorr_histo.pdf}\\
+%\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
+\column{.5\textwidth} % Left column and width
+\begin{figure}
+\includegraphics[width=\linewidth]{torsion_fit.pdf}\\
+%\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
+\end{figure}
+
+\end{columns}
 \end{frame}
 
 

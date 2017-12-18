@@ -281,6 +281,11 @@ Cuts in x:
  \item x1: \xmin\ [mm]
  \item x2: \xmax\ [mm]
 \end{itemize}
+Cuts in y:
+\begin{itemize}[leftmargin=*]
+ \item y1: \ymin\ [mm]
+ \item y2: \ymax\ [mm]
+\end{itemize}
 
 \end{columns}
 \end{frame}
@@ -322,16 +327,21 @@ Cuts in x:
 
 \begin{frame}
 \frametitle{Torsion analysis: efficiency fit}
+\vspace{-0.75cm}
+\begin{columns}[t] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
 
-\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
-
-\column{.7\textwidth} % Left column and width
+\column{.6\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=\linewidth]{torsion_fit.pdf}\\
+\includegraphics[width=\linewidth]{efficiency_histo.pdf}\\
 %\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
-\column{.3\textwidth} % Left column and width
+\column{.4\textwidth} % Left column and width
+\begin{figure}
+\includegraphics[width=\linewidth]{torsion_fit.pdf}\\
+%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\end{figure}
+
 Efficiency fit:
 \begin{itemize}[leftmargin=*]
  \item m: \torsionm\ [$\mu$rad/mm]
@@ -346,13 +356,23 @@ Efficiency fit:
 
 
 \begin{frame}
-\frametitle{Torsion analysis: corrected histogram}
+\frametitle{Deflection histograms}
 
+\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
+
+\column{.5\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{corrected_histo.pdf}\\
-%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\includegraphics[width=\linewidth]{nocorr_histo.pdf}\\
+%\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
+\column{.5\textwidth} % Left column and width
+\begin{figure}
+\includegraphics[width=\linewidth]{corrected_histo.pdf}\\
+%\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
+\end{figure}
+
+\end{columns}
 \end{frame}
 
 
@@ -370,28 +390,47 @@ Efficiency fit:
 \section{Channeling analysis}
 %------------------------------------------------
 
-\begin{frame}
-\frametitle{Channeling fit: cut at $\pm \frac{\theta_c}{2}$: half critical angle}
+% \begin{frame}
+% \frametitle{Channeling fit: cut at $\pm \frac{\theta_c}{2}$: half critical angle}
+% 
+% \begin{figure}
+% \includegraphics[width=0.8\linewidth]{half_thetac_chan_histo.pdf}\\
+% %\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+% \end{figure}
+% 
+% \end{frame}
+% 
+% 
+% \begin{frame}
+% \frametitle{Channeling fit: cut at $\pm \theta_c$: critical angle}
+% 
+% \begin{figure}
+% \includegraphics[width=0.8\linewidth]{thetac_chan_histo.pdf}\\
+% %\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+% \end{figure}
+% 
+% \end{frame}
 
+
+\begin{frame}
+\frametitle{Channeling fit: cuts at $\pm \frac{\theta_c}{2}$ and $\pm \theta_c$:}
+
+\begin{columns}[c] % The "c" option specifies centered vertical alignment while the "t" option is used for top vertical alignment
+
+\column{.5\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{half_thetac_chan_histo.pdf}\\
-%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\includegraphics[width=\linewidth]{half_thetac_chan_histo.pdf}\\
+%\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Channeling fit: cut at $\pm \theta_c$: critical angle}
-
+\column{.5\textwidth} % Left column and width
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{thetac_chan_histo.pdf}\\
-%\caption{\footnotesize \itshape Efficiency plot: \xmin\ -> \xmax\ [mm]}
+\includegraphics[width=\linewidth]{thetac_chan_histo.pdf}\\
+%\caption{\footnotesize \itshape Istogramma delle deflessioni a seconda dell'angolo d'ingresso.}
 \end{figure}
 
+\end{columns}
 \end{frame}
-
-
 
 
 

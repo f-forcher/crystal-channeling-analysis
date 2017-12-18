@@ -352,8 +352,8 @@ with open("latex/test_gen-definitions.tex","w") as myfile:
 
     myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\xmin",float(cut_x_left)))
     myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\xmax",float(cut_x_right)))
-    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\ymin",float(cut_x_left)))
-    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\ymax",float(cut_x_right)))
+    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\ymin",float(cut_y_low)))
+    myfile.write("\\newcommand{{{}}}{{{:.3f}}}\n".format("\\ymax",float(cut_y_high)))
 
     myfile.write("\n")
 
