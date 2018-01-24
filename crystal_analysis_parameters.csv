@@ -4,11 +4,11 @@ particle_name:Xenon
 root_file_name:CHAN_recoDataSimple_5870_5plane_offset0_0.root
 particle_energy:95.6
 run_number:5870
-xmax:0.525
+xmax:0.3
 ymin:-3.0
 ymax:3.0
-xmin:-0.875
-torsion_m_err:0.5142991469716517
-torsion_q:-14.886762709703358
-torsion_m:2.1864460704590516
-torsion_q_err:0.6080028331702321
+xmin:-0.175
+torsion_m_err:0.30933426200009595
+torsion_q:-2.376804852941898
+torsion_m:1.5954464804624946
+torsion_q_err:0.5745672568319402
