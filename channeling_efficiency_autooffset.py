@@ -9,10 +9,13 @@ import sys
 from itertools import islice
 from scipy import signal # To find peaks, for edge-detecting the crystal
 from scipy.optimize import curve_fit
+import scipy
 import os
 from sklearn import mixture
 import random
 import math
+
+from mpl_toolkits.mplot3d import Axes3D
 
 # MY LIBS
 # import editable_input as ei # My script for editable text input
@@ -28,6 +31,198 @@ def gaussian(x, mu, sig, c):
 def gaussian_sum(x, c1, mu1, sig1, mu2, sig2):
     return c1*matplotlib.mlab.normpdf(x, mu1, sig1) + \
            (1-c1)*matplotlib.mlab.normpdf(x, mu2, sig2)
+
+
+# def histobinwidth_cost_func(x, y, bw_x, bw_y):
+#     """
+#     From http://www.neuralengine.org/res/histogram.html
+#
+#     Target cost function of the binwidth bw, minimize to get best binwidth from
+#     the shimazaki-shimonoto rule.
+#
+#     x,y: ordered data arrays, the same passed to np.histogram2d
+#     bw_x,bw_y: Bin width parameters along the two axes to optimize
+#     """
+#     bin_x_num =
+#
+#
+#     hist, x1, y1 = np.histogram2d(events.loc[:,'Tracks_thetaIn_x'].values,
+#     events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,
+#     bins=[bw_x,bw_y], range=[[-100,100], [-80,120]])
+
+def best_binwidth(x, y):
+    x_max = 100
+    x_min = -100
+
+    y_max = 120
+    y_min = -80
+
+
+    Nx_MIN = 10  #Minimum number of bins in x (integer)
+    Nx_MAX = 200  #Maximum number of bins in x (integer)
+
+    Ny_MIN = 10 #Minimum number of bins in y (integer)
+    Ny_MAX = 200  #Maximum number of bins in y (integer)
+
+
+    Nx = np.arange(Nx_MIN, Nx_MAX,5) # #of Bins
+    Ny = np.arange(Ny_MIN, Ny_MAX,5) # #of Bins
+
+    Dx = (x_max - x_min) / Nx    #Bin size vector
+    Dy = (y_max - y_min) / Ny    #Bin size vector
+
+    Dxy=[]
+    for i in Dx:    #Bin size vector
+        a=[]
+        for j in Dy:    #Bin size vector
+            a.append((i,j))
+        Dxy.append(a)
+    Dxy=np.array( Dxy, dtype=[('x', float),('y', float)]) #matrix of bin size vector
+
+
+    Cxy=np.zeros(np.shape(Dxy))
+
+    Cxy__Dxy_plot=[] #save data to plot in scatterplot x,y,z
+
+
+    #Computation of the cost function to x and y
+    for i in range(np.size(Nx)):
+        for j in range(np.size(Ny)):
+            print(Nx[i], " ", Ny[j])
+            ki = np.histogram2d(x,y, bins=(Nx[i],Ny[j]))
+            ki = ki[0]   #The mean and the variance are simply computed from the event counts in all the bins of the 2-dimensional histogram.
+            k = np.mean(ki) #Mean of event count
+            v = np.var(ki)  #Variance of event count
+            Cxy[i,j] = (2 * k - v) / ( (Dxy[i,j][0]*Dxy[i,j][1])**2 )  #The cost Function
+
+                                #(Cxy      , Dx          ,  Dy)
+            Cxy__Dxy_plot.append((Cxy[i,j] , Dxy[i,j][0] , Dxy[i,j][1]))#Save result of cost function to scatterplot
+
+    Cxy__Dxy_plot = np.array( Cxy__Dxy_plot , dtype=[('Cxy', float),('Dx', float), ('Dy', float)])  #Save result of cost function to scatterplot
+
+    #Optimal Bin Size Selection
+
+    #combination of i and j that produces the minimum cost function
+    idx_min_Cxy=np.where(Cxy == np.min(Cxy)) #get the index of the min Cxy
+
+    Cxymin=Cxy[idx_min_Cxy[0][0],idx_min_Cxy[1][0]] #value of the min Cxy
+
+    print(sum(Cxy==Cxymin)) #check if there is only one min value
+
+    optDxy=Dxy[idx_min_Cxy[0][0],idx_min_Cxy[1][0]]#get the bins size pairs that produces the minimum cost function
+
+    optDx=optDxy[0]
+    optDy=optDxy[1]
+
+    idx_Nx=idx_min_Cxy[0][0]#get the index in x that produces the minimum cost function
+    idx_Ny=idx_min_Cxy[1][0]#get the index in y that produces the minimum cost function
+
+    print('Cxymin', Cxymin, Nx[idx_Nx], optDx)
+    print('Cxymin', Cxymin, Ny[idx_Ny], optDy)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    x=Cxy__Dxy_plot['Dx']
+    y=Cxy__Dxy_plot['Dy']
+    z =Cxy__Dxy_plot['Cxy']
+    ax.scatter(x, y, z, c=z, marker='o')
+
+    ax.set_xlabel('Dx')
+    ax.set_ylabel('Dy')
+    ax.set_zlabel('Cxy')
+    plt.draw()
+
+    ax.scatter( [optDx], [optDy],[Cxymin], marker='v', s=150,c="red")
+    ax.text(optDx, optDy,Cxymin, "Cxy min", color='red')
+    plt.draw()
+    plt.show()
+
+
+    return Nx[idx_Nx],Ny[idx_Ny]
+
+
+
+def sgolay2d ( z, window_size, order, derivative=None):
+    """
+    Taken from https://scipy-cookbook.readthedocs.io/items/SavitzkyGolay.html
+    """
+    # number of terms in the polynomial expression
+    n_terms = ( order + 1 ) * ( order + 2)  / 2.0
+
+    if  window_size % 2 == 0:
+        raise ValueError('window_size must be odd')
+
+    if window_size**2 < n_terms:
+        raise ValueError('order is too high for the window size')
+
+    half_size = window_size // 2
+
+    # exponents of the polynomial.
+    # p(x,y) = a0 + a1*x + a2*y + a3*x^2 + a4*y^2 + a5*x*y + ...
+    # this line gives a list of two item tuple. Each tuple contains
+    # the exponents of the k-th term. First element of tuple is for x
+    # second element for y.
+    # Ex. exps = [(0,0), (1,0), (0,1), (2,0), (1,1), (0,2), ...]
+    exps = [ (k-n, n) for k in range(order+1) for n in range(k+1) ]
+
+    # coordinates of points
+    ind = np.arange(-half_size, half_size+1, dtype=np.float64)
+    dx = np.repeat( ind, window_size )
+    dy = np.tile( ind, [window_size, 1]).reshape(window_size**2, )
+
+    # build matrix of system of equation
+    A = np.empty( (window_size**2, len(exps)) )
+    for i, exp in enumerate( exps ):
+        A[:,i] = (dx**exp[0]) * (dy**exp[1])
+
+    # pad input array with appropriate values at the four borders
+    new_shape = z.shape[0] + 2*half_size, z.shape[1] + 2*half_size
+    Z = np.zeros( (new_shape) )
+    # top band
+    band = z[0, :]
+    Z[:half_size, half_size:-half_size] =  band -  np.abs( np.flipud( z[1:half_size+1, :] ) - band )
+    # bottom band
+    band = z[-1, :]
+    Z[-half_size:, half_size:-half_size] = band  + np.abs( np.flipud( z[-half_size-1:-1, :] )  -band )
+    # left band
+    band = np.tile( z[:,0].reshape(-1,1), [1,half_size])
+    Z[half_size:-half_size, :half_size] = band - np.abs( np.fliplr( z[:, 1:half_size+1] ) - band )
+    # right band
+    band = np.tile( z[:,-1].reshape(-1,1), [1,half_size] )
+    Z[half_size:-half_size, -half_size:] =  band + np.abs( np.fliplr( z[:, -half_size-1:-1] ) - band )
+    # central band
+    Z[half_size:-half_size, half_size:-half_size] = z
+
+    # top left corner
+    band = z[0,0]
+    Z[:half_size,:half_size] = band - np.abs( np.flipud(np.fliplr(z[1:half_size+1,1:half_size+1]) ) - band )
+    # bottom right corner
+    band = z[-1,-1]
+    Z[-half_size:,-half_size:] = band + np.abs( np.flipud(np.fliplr(z[-half_size-1:-1,-half_size-1:-1]) ) - band )
+
+    # top right corner
+    band = Z[half_size,-half_size:]
+    Z[:half_size,-half_size:] = band - np.abs( np.flipud(Z[half_size+1:2*half_size+1,-half_size:]) - band )
+    # bottom left corner
+    band = Z[-half_size:,half_size].reshape(-1,1)
+    Z[-half_size:,:half_size] = band - np.abs( np.fliplr(Z[-half_size:, half_size+1:2*half_size+1]) - band )
+
+    # solve system and convolve
+    if derivative == None:
+        m = np.linalg.pinv(A)[0].reshape((window_size, -1))
+        return scipy.signal.fftconvolve(Z, m, mode='valid')
+    elif derivative == 'col':
+        c = np.linalg.pinv(A)[1].reshape((window_size, -1))
+        return scipy.signal.fftconvolve(Z, -c, mode='valid')
+    elif derivative == 'row':
+        r = np.linalg.pinv(A)[2].reshape((window_size, -1))
+        return scipy.signal.fftconvolve(Z, -r, mode='valid')
+    elif derivative == 'both':
+        c = np.linalg.pinv(A)[1].reshape((window_size, -1))
+        r = np.linalg.pinv(A)[2].reshape((window_size, -1))
+        return scipy.signal.fftconvolve(Z, -r, mode='valid'), scipy.signal.fftconvolve(Z, -c, mode='valid')
+
+
 
 
 def fit_channeling(input_df,lowest_percentage, highest_percentage,
@@ -271,10 +466,24 @@ max_iterations = int(my.get_from_csv(analysis_configuration_params_file,
 
 i = 0
 plt.figure()
-plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values, \
+
+
+# TODO SavitzkyGolay filter
+hist, x1, y1, img = plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values, \
  events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
- bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
+ bins=[200,100], norm=LogNorm(), range=[[-100,100], [-80,120]]) # ideal 29,17
+newhist = sgolay2d(hist, window_size=11, order=2);
+ind = np.unravel_index(np.argmax(np.rot90(newhist), axis=None), np.rot90(newhist).shape);
+plt.axvline(x=x1[ind[1]], linestyle="dashed", color='Crimson', label="")
+
+plt.matshow(np.rot90(newhist)); plt.plot(ind[1],ind[0],'ro')
+
 #plt.figure(); plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values, events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values, bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
+
+
+
+
+
 
 for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     plt.figure()
