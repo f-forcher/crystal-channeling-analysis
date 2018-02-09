@@ -63,8 +63,6 @@ def fit_channeling(input_df,lowest_percentage, highest_percentage,
         max_iter=max_iterations)
 
     ################# GET THE DATA FROM THE DATAFRAME
-    lowest_percentage = 3
-    highest_percentage = 97
     first_percentile = np.percentile(input_df, lowest_percentage)
     last_percentile = np.percentile(input_df, highest_percentage)
     data_reduced = input_df.values[(input_df.values >= \
@@ -264,6 +262,9 @@ print("New Thetac: ", theta_c)
 lowest_percentage, highest_percentage = my.get_from_csv(analysis_configuration_params_file,
                                      "chan_low_percentage",
                                      "chan_high_percentage")
+dech_start, dech_end = my.get_from_csv(analysis_configuration_params_file,
+                                     "dech_start",
+                                     "dech_end")
 chan_fit_tolerance = my.get_from_csv(analysis_configuration_params_file,
                                  "chan_fit_tolerance")
 max_iterations = int(my.get_from_csv(analysis_configuration_params_file,
@@ -273,17 +274,19 @@ i = 0
 plt.figure()
 plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values, \
  events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
- bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
+ bins=[200,dtx_nbins], norm=LogNorm(), range=[[-100,100], [dtx_low,dtx_high]])
 #plt.figure(); plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values, events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values, bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
 
 for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     plt.figure()
     geocut_df = events.loc[(events.loc[:,'Tracks_thetaIn_x'] > low_cut) & \
                                   (events.loc[:,'Tracks_thetaIn_x'] < high_cut)]
+    totcut_df = geocut_df.loc[(events.loc[:,'Delta_Theta_x'] < dech_start) | \
+                                  (events.loc[:,'Delta_Theta_x'] > dech_end)]
     # plt.hist2d(geocut_df.loc[:,'Tracks_thetaIn_x'].values, \
     #  geocut_df.loc[:,'Tracks_thetaOut_x'].values - geocut_df.loc[:,'Tracks_thetaIn_x'].values,\
     #  bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
-    fit_and_data = fit_channeling(geocut_df.Delta_Theta_x,
+    fit_and_data = fit_channeling(totcut_df.Delta_Theta_x,
                                   lowest_percentage, highest_percentage,
                                   chan_fit_tolerance, max_iterations)
     fit_results = fit_and_data[0]
@@ -293,9 +296,12 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     #plt.hist(filtered_data, bins=dtx_nbins, range=[dtx_low,dtx_high], normed=False) # [murad]
 
 
-    total_number_of_events = fit_results["nevents"]
-    gauss_AM = total_number_of_events * fit_results["weight_AM"] * matplotlib.mlab.normpdf(x_histo, fit_results["mean_AM"], fit_results["sigma_AM"])
-    gauss_CH = total_number_of_events * fit_results["weight_CH"] * matplotlib.mlab.normpdf(x_histo, fit_results["mean_CH"], fit_results["sigma_CH"])
+    total_number_of_events = len(filtered_data)#fit_results["nevents"]
+    area_bin = (dtx_high-dtx_low)/dtx_nbins * 1
+    gauss_AM = area_bin*total_number_of_events * fit_results["weight_AM"] * matplotlib.mlab.normpdf(x_histo, fit_results["mean_AM"], fit_results["sigma_AM"])
+    gauss_CH = area_bin*total_number_of_events * fit_results["weight_CH"] * matplotlib.mlab.normpdf(x_histo, fit_results["mean_CH"], fit_results["sigma_CH"])
+    # gauss_AM = fit_results["weight_AM"]  * matplotlib.mlab.normpdf(x_histo, fit_results["mean_AM"], fit_results["sigma_AM"])
+    # gauss_CH = fit_results["weight_CH"] * matplotlib.mlab.normpdf(x_histo, fit_results["mean_CH"], fit_results["sigma_CH"])
 
     plt.plot(x_histo, gauss_AM, label="Amorphous Peak", color='r')
     plt.plot(x_histo, gauss_CH, label="Channeling Peak", color='Orange')

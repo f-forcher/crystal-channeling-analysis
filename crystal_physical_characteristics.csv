@@ -1,6 +1,6 @@
 Name,Purpose,H8 bending angle (urad),Width (x) (mm),Lenght (z) (mm),Fabrication,H8 test,Crystal Type,Manufacturer
 STF98,N.I. studies,,1.017,1.968,02/2015,02/13/2015,Silicon strip - plane (110) - axis ,INFN
-STF101,N.I. studies,,1.004,1.988,02/2015,"02/12/2015, 05/03/2015",Silicon strip - plane (110) - axis ,INFN
+STF101,N.I. studies,165,1.004,1.988,02/2015,"02/12/2015, 05/03/2015",Silicon strip - plane (110) - axis ,INFN
 STF99,N.I. studies,100,2.008,1.994,02/2015,"02/14/2015, 05/01/2015",Silicon strip - plane (110) - axis ,INFN
 STF100,N.I. studies,,1.024,1.954,02/2015,"02/12/2015, 05/02/2015, 06/04/2015",Silicon strip - plane (110) - axis ,INFN
 QMP32,SPS,160,N/A,0.96,08/2011,10/13/2014,Quasi-mosaic,PNPI

@@ -17,14 +17,14 @@ parameter_name:value
 
 ############ GEOMETRICAL CUTS: geometric_cuts.py parameters
 #### Geometrical cuts in Y. They are somewhat arbitrary and not from analysis
-cut_y_low: -2 # [mm]
-cut_y_high: 2 # [mm]
+cut_y_low: -1.5 # [mm]
+cut_y_high: 1.5 # [mm]
 
 #### 2D Histogram plot parameters, x_in vs delta_theta_x
 geocut_histo_range_x_low:  -5   # [mm]
 geocut_histo_range_x_high:  5   # [mm]
 geocut_histo_range_dtx_low:  -100 # [murad]
-geocut_histo_range_dtx_high:  100 # [murad]
+geocut_histo_range_dtx_high:  220 # [murad]
 geocut_numberofbin_per_axis:  400
 
 
@@ -50,7 +50,7 @@ torcorr_eff_high_percentage: 90     # [%]
 # Put them equal to keep all data
 # Used also in channeling_efficiency_*.py scripts
 dech_start: 25 # [murad] Should be around 3 sigma_AM
-dech_end:   25 # [murad] Should be around chan_CH_means_init - 3*sigma_CH
+dech_end:   135 # [murad] Should be around chan_CH_means_init - 3*sigma_CH
 
 # If data content of y-thetax bin is lower than this number, ignore the bin and
 # do not calculate efficiency (white bin in eff plot)
@@ -81,7 +81,7 @@ torcorr_eff_thetain_x_nbins:  60
 torcorr_hist_range_tx_low:    -100 # [murad]
 torcorr_hist_range_tx_high:    100 # [murad]
 torcorr_hist_range_dtx_low:   -80  # [murad]
-torcorr_hist_range_dtx_high:   120 # [murad]
+torcorr_hist_range_dtx_high:   220 # [murad]
 torcorr_hist_tx_nbins:         400
 torcorr_hist_dtx_nbins:        200
 ####################################
@@ -97,8 +97,9 @@ chan_center_offset: 0 # [murad]
 #### Pre-efficiency-fit data selection filter parameters
 # Retain the data between these percentiles.
 chan_low_percentage:  0.3     # [%]
-chan_high_percentage: 99.7     # [%]
+chan_high_percentage: 99.7    # [%]
 # dech_start and dech_end from torsion_correction section are used as well
+
 
 #### Efficiency fit inizialization parameters for sklearn.mixture.GaussianMixture
 # chan_AM_means_init: -0    # [murad], No effect atm, commented
@@ -113,6 +114,6 @@ chan_max_iterations: 500  # ignore y-thetax bin, if fit did not converge
 #### Corrected theta_x vs delta_theta_x 2D histogram, parameters
 # Range should be changed if theta_b of crystal is very different from 50 murad
 chan_hist_range_dtx_low:    -100 # [murad]
-chan_hist_range_dtx_high:    100 # [murad]
+chan_hist_range_dtx_high:    220 # [murad]
 chan_hist_tx_nbins:          200
 ####################################

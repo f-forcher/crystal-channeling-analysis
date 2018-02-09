@@ -29,7 +29,7 @@ def line(x, m, q):
     return m*x + q
 
 def fit_and_get_efficiency(input_data, lowest_percentage,
-                           highest_percentage, low_data_threshold,
+                           highest_percentage, low_data_threshold, dech_start, dech_end,
                            AM_means_init, CH_means_init, AM_sigma_init,
                            CH_sigma_init,fit_tolerance,max_iterations):
     """
@@ -58,6 +58,8 @@ def fit_and_get_efficiency(input_data, lowest_percentage,
     ################# GET THE DATA FROM THE DATAFRAME
     # lowest_percentage = 5
     # highest_percentage = 95
+    input_data = input_data.loc[(input_data < dech_start) | \
+                                  (input_data > dech_end)]
     first_percentile = np.percentile(input_data, lowest_percentage)
     last_percentile = np.percentile(input_data, highest_percentage)
     data_reduced = input_data.values[(input_data.values>=first_percentile) & (input_data.values<=last_percentile)]
@@ -235,6 +237,11 @@ low_data_threshold = my.get_from_csv(analysis_configuration_params_file,
                                      "torcorr_eff_high_percentage",
                                      "torcorr_eff_low_data_threshold")
 
+dech_start, dech_stop = my.get_from_csv(analysis_configuration_params_file,
+                                     "dech_start",
+                                     "dech_end")
+
+
 AM_means_init, CH_means_init, AM_sigma_init, \
 CH_sigma_init, fit_tolerance = my.get_from_csv( \
                                      analysis_configuration_params_file,
@@ -247,8 +254,8 @@ max_iterations = int(my.get_from_csv(analysis_configuration_params_file,
                                  "torcorr_eff_max_iterations"))
 
 robust_fit = lambda x: fit_and_get_efficiency(x, lowest_percentage,
-                           highest_percentage, low_data_threshold,
-                           AM_means_init, CH_means_init, AM_sigma_init,
+                           highest_percentage, low_data_threshold, dech_start,
+                           dech_stop, AM_means_init, CH_means_init, AM_sigma_init,
                            CH_sigma_init, fit_tolerance, max_iterations)
 efficiencies = gruppi["Delta_Theta_x"].aggregate(robust_fit)
 
@@ -260,7 +267,7 @@ center_angle = efficiencies.index[int(thetain_x_nbins//2)][1]
 avg_Delta_Theta_x = [np.average(efficiencies.dropna().xs(xx,level=0).index.values, \
                     weights=efficiencies.dropna().xs(xx,level=0).values) for xx \
                     in efficiencies.xs(center_angle,level=1).index.values]
-avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.dropna().xs(xx,level=0).index.values,efficiencies.fillna(0.5).xs(xx,level=0).values, \
+avg_Delta_Theta_x_fit_noNaN = [curve_fit(gaussian,efficiencies.xs(xx,level=0).index.values,efficiencies.fillna(0).xs(xx,level=0).values, \
                                #sigma=1/np.sqrt(gruppi.apply(len).xs(xx,level=0).values),
                                method="dogbox",loss="cauchy", max_nfev=1000*thetain_x_nbins)[0][0] for xx \
                     in efficiencies.xs(center_angle,level=1).index.values]
