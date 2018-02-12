@@ -173,8 +173,8 @@ if '_'+run_number+'_' not in file_name:
 events = pd.read_hdf(file_name)
 
 # Angles in microradians from torsion_correction.py lines 171-174
-events["Delta_Theta_x"] = events.loc[:,'Tracks_thetaOut_x'].values - \
-                               events.loc[:,'Tracks_thetaIn_x'].values
+# events["Delta_Theta_x"] = events.loc[:,'Tracks_thetaOut_x'].values - \
+#                                events.loc[:,'Tracks_thetaIn_x'].values
 
 # # Read crystal parameters
 cpars = pd.read_csv("crystal_physical_characteristics.csv", index_col=0)

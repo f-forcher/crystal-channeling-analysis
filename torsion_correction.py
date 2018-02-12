@@ -371,10 +371,11 @@ events.to_hdf("nocorr_"+file_name+".hdf","simpleEvent",
 
 
 ################# CORRECT FOR TORSION AND SHOW THE PLOT
+#events["Tracks_thetaIn_x"]
 events["Tracks_thetaIn_x"] = (events["Tracks_thetaIn_x"] -
                               (tor_m*events["Tracks_d0_y"]+tor_q))# + init_scan
 plt.figure()
-plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
+plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values ,events.loc[:,'Delta_Theta_x'].values,\
            bins=[hist_tx_nbins,hist_dtx_nbins],
            norm=LogNorm(),
            range=[[hist_range_tx_low, hist_range_tx_high],
@@ -395,5 +396,5 @@ plt.show()
 events.to_hdf("torsion_corrected_"+file_name+".hdf","simpleEvent",
                 format="table",
                 fletcher32=True, mode="a", complevel=9, append=False,
-                data_columns=['Tracks_thetaIn_x', 'Tracks_thetaOut_x'])
+                data_columns=['Tracks_thetaIn_x', 'Tracks_thetaOut_x','Delta_Theta_x'])
 #################
