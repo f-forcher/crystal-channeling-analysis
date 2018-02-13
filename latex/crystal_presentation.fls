@@ -1,4 +1,4 @@
-PWD /home/fforcher/Documents/DATI_CRISTALLI_2017/STF110_2017december/crystal-channeling-analysis/latex
+PWD /home/fforcher/Documents/TEST_OFFSET_SCRIPTS/STF107/crystal-channeling-analysis/latex
 INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
@@ -452,10 +452,13 @@ INPUT img/CERN_LogoBadge_no_transparency.pdf
 INPUT ./img/efficiency_histo.pdf
 INPUT ./img/torsion_fit.pdf
 INPUT img/CERN_LogoBadge_no_transparency.pdf
-INPUT ./img/nocorr_histo.pdf
 INPUT ./img/corrected_histo.pdf
 INPUT ./img/half_thetac_chan_histo.pdf
 INPUT ./img/thetac_chan_histo.pdf
+INPUT img/CERN_LogoBadge_no_transparency.pdf
+INPUT ./img/offset_nocorr_histo.pdf
+INPUT ./img/offset_half_thetac_chan_histo.pdf
+INPUT ./img/offset_thetac_chan_histo.pdf
 INPUT img/CERN_LogoBadge_no_transparency.pdf
 OUTPUT crystal_presentation.nav
 OUTPUT crystal_presentation.toc

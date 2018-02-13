@@ -472,6 +472,12 @@ plt.figure()
 hist, x1, y1, img = plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values, \
  events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values,\
  bins=[200,dtx_nbins], norm=LogNorm(), range=[[-100,100], [dtx_low,dtx_high]]) # ideal 29,17
+plt.suptitle(r"Crystal {}, run {} — {} {} GeV".format(crystal_name, run_number, particle_name, particle_energy_input),fontweight='bold')
+plt.title(r"Original histogram and calculated offset: {}".format(r"$\theta_{x}$ vs $\Delta \theta_{x}$"))
+plt.xlabel(r'$\theta_{x_{in}}\ [\mu rad]$')
+plt.ylabel(r'$\Delta \theta_{x}\ [\mu rad]$')
+# print(events)
+plt.colorbar()
 # Window size = next odd number after rounded thetac
 window_size_sg = int(np.round(theta_c)) + int(np.round(theta_c))%2 + 1
 newhist = sgolay2d(hist, window_size=window_size_sg, order=3);
@@ -485,8 +491,14 @@ ind = np.unravel_index(np.argmax(np.rot90(newhist_upper_half), axis=None), np.ro
 angular_offset = x1[ind[1]]
 print("Calculated offset = ",angular_offset)
 plt.axvline(x=angular_offset, linestyle="dashed", color='Crimson', label="")
+nocorr_offset_filename = 'offset_nocorr_histo'
+plt.savefig("latex/img/"+ nocorr_offset_filename + ".pdf")
 
-plt.matshow(np.rot90(newhist)); plt.plot(ind[1],ind[0],'ro')
+plt.matshow(np.rot90(newhist)); plt.plot(ind[1],ind[0],'r.')
+filtered_filename = 'offset_filtered_histo'
+plt.savefig("latex/img/"+ filtered_filename + ".pdf")
+#plt.show()
+
 #plt.figure(); plt.hist2d(events.loc[:,'Tracks_thetaIn_x'].values, events.loc[:,'Tracks_thetaOut_x'].values - events.loc[:,'Tracks_thetaIn_x'].values, bins=[400,200], norm=LogNorm(), range=[[-100,100], [-80,120]])
 
 # SET THE CUTS
@@ -531,8 +543,8 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     plt.plot(x_histo, gauss_CH, label="Channeling Peak", color='Orange')
     thetac_title = r"$\theta_c/2$" if i == 0 else r"$\theta_c$"
     cut_value = theta_c/2 if i == 0 else theta_c
-    plt.suptitle(r"{} run {}, {} {} GeV — Channeling, cut ± {} = ±{:.3}".format(crystal_name,run_number,particle_name,particle_energy_input,thetac_title,cut_value),fontweight='bold')
-    plt.title(r"Efficiency {:.3}% ± {:.1f}% — Bending Angle {:.4} ± {:.1f} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
+    plt.suptitle(r"{} run {}, {} {} GeV — Chan., cut ± {} = {:.1f}±{:.3}".format(crystal_name,run_number,particle_name,particle_energy_input,thetac_title,angular_offset,cut_value),fontweight='bold')
+    plt.title(r"Efficiency {:.3}% ± {:.1f}% — Bending Angle {:.3} ± {:.1f} {}".format(fit_results["weight_CH"]*100, fit_results["weight_CH_err"]*100,
                                                                                 fit_results["mean_CH"],fit_results["mean_CH_err"],r"$[\mu rad]$"))
     plt.xlabel(r'$\Delta \theta_{x}\ [\mu rad]$')
     plt.ylabel('Frequency')
@@ -540,7 +552,7 @@ for low_cut, high_cut in zip(ang_cut_low,ang_cut_high):
     #plt.tight_layout()
 
 
-    thetac_filename = 'half_thetac' if i == 0 else 'thetac'
+    thetac_filename = 'offset_half_thetac' if i == 0 else 'offset_thetac'
     plt.savefig("latex/img/"+ thetac_filename + "_chan_histo.pdf")
     plt.show()
 
