@@ -6,5 +6,5 @@
 latex/test_gen-definitions.tex
 latex/crystal_presentation.*
 !latex/crystal_presentation.tex
-latex/img/*
+latex/img/
 crystal_analysis_parameters.csv
